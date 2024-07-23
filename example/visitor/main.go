@@ -32,7 +32,7 @@ func main() {
 	defer p.Close(ctx)
 
 	source := "puts 'Hello, World!'"
-	result, err := p.Parse(ctx, source)
+	result, err := p.Parse(ctx, []byte(source))
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

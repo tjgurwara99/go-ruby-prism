@@ -48,7 +48,7 @@ func parseAllFiles(b *testing.B, output string) {
 			os.Exit(1)
 		}
 
-		_, err = p.Parse(ctx, string(source))
+		_, err = p.Parse(ctx, source)
 		if err != nil {
 			b.Fatalf(fmt.Sprintf("failed to parse file %s: %s", file, err))
 		}

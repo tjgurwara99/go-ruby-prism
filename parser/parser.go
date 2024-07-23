@@ -30,7 +30,7 @@ func (p *Parser) Close(ctx context.Context) error {
 	return nil
 }
 
-func (p *Parser) Parse(ctx context.Context, source string) (result *ParseResult, err error) {
+func (p *Parser) Parse(ctx context.Context, source []byte) (result *ParseResult, err error) {
 	result = nil
 	err = nil
 
@@ -50,16 +50,13 @@ func (p *Parser) Parse(ctx context.Context, source string) (result *ParseResult,
 	return result, nil
 }
 
-func (p *Parser) parseWithOptions(ctx context.Context, source string, opts *parseOptions) (*ParseResult, error) {
-	// put source into memory
-	sourceBytes := []byte(source)
-
-	sourcePtr, err := p.runtime.Calloc(ctx, 1, uint64(len(sourceBytes)))
+func (p *Parser) parseWithOptions(ctx context.Context, source []byte, opts *parseOptions) (*ParseResult, error) {
+	sourcePtr, err := p.runtime.Calloc(ctx, 1, uint64(len(source)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to allocate memory for source: %w", err)
 	}
 
-	if !p.runtime.MemoryWrite(sourcePtr, sourceBytes) {
+	if !p.runtime.MemoryWrite(sourcePtr, source) {
 		return nil, fmt.Errorf("failed to write the source into memory: %w", err)
 	}
 
@@ -93,7 +90,7 @@ func (p *Parser) parseWithOptions(ctx context.Context, source string, opts *pars
 		return nil, fmt.Errorf("failed to init the buffer: %w", err)
 	}
 
-	if _, err := p.runtime.SerializeParse(ctx, bufferPtr, sourcePtr, uint64(len(sourceBytes)), optPtr); err != nil {
+	if _, err := p.runtime.SerializeParse(ctx, bufferPtr, sourcePtr, uint64(len(source)), optPtr); err != nil {
 		return nil, fmt.Errorf("failed to call the parse function: %w", err)
 	}
 
@@ -130,7 +127,7 @@ func (p *Parser) parseWithOptions(ctx context.Context, source string, opts *pars
 		return nil, fmt.Errorf("failed to free memory for option ptr: %w", err)
 	}
 
-	result, err := deserialize(serializedBytes, sourceBytes)
+	result, err := deserialize(serializedBytes, source)
 	if err != nil {
 		return nil, fmt.Errorf("failed to deserialize the result: %w", err)
 	}
