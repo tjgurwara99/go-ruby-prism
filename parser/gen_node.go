@@ -14,8 +14,13 @@ type NodeVisitor interface {
 type Node interface {
 	Accept(NodeVisitor)
 	Children() []Node
+	Location() *Location
 }
 
+// Represents the use of the `alias` keyword to alias a global variable.
+//
+//	alias $foo $bar
+//	^^^^^^^^^^^^^^^
 type AliasGlobalVariableNode struct {
 	Newname    Node
 	Oldname    Node
@@ -56,6 +61,14 @@ func (node *AliasGlobalVariableNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AliasGlobalVariableNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `alias` keyword to alias a method.
+//
+//	alias foo bar
+//	^^^^^^^^^^^^^
 type AliasMethodNode struct {
 	Newname    Node
 	Oldname    Node
@@ -96,6 +109,14 @@ func (node *AliasMethodNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AliasMethodNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an alternation pattern in pattern matching.
+//
+//	foo => bar | baz
+//	       ^^^^^^^^^
 type AlternationPatternNode struct {
 	Left        Node
 	Right       Node
@@ -136,6 +157,14 @@ func (node *AlternationPatternNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AlternationPatternNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&` operator or the `and` keyword.
+//
+//	left and right
+//	^^^^^^^^^^^^^^
 type AndNode struct {
 	Left        Node
 	Right       Node
@@ -176,6 +205,14 @@ func (node *AndNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AndNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a set of arguments to a method or a keyword.
+//
+//	return foo, bar, baz
+//	       ^^^^^^^^^^^^^
 type ArgumentsNode struct {
 	Flags     ArgumentsNodeFlags
 	Arguments []Node
@@ -215,6 +252,14 @@ func (node *ArgumentsNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ArgumentsNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an array literal. This can be a regular array using brackets or a special array using % like %w or %i.
+//
+//	[1, 2, 3]
+//	^^^^^^^^^
 type ArrayNode struct {
 	Flags      ArrayNodeFlags
 	Elements   []Node
@@ -260,6 +305,26 @@ func (node *ArrayNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ArrayNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an array pattern in pattern matching.
+//
+//	foo in 1, 2
+//	^^^^^^^^^^^
+//
+//	foo in [1, 2]
+//	^^^^^^^^^^^^^
+//
+//	foo in *1
+//	^^^^^^^^^
+//
+//	foo in Bar[]
+//	^^^^^^^^^^^^
+//
+//	foo in Bar[1, 2, 3]
+//	^^^^^^^^^^^^^^^^^^^
 type ArrayPatternNode struct {
 	Constant   Node
 	Requireds  []Node
@@ -317,6 +382,14 @@ func (node *ArrayPatternNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ArrayPatternNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a hash key/value pair.
+//
+//	{ a => b }
+//	  ^^^^^^
 type AssocNode struct {
 	Key         Node
 	Value       Node
@@ -357,6 +430,14 @@ func (node *AssocNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AssocNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a splat in a hash literal.
+//
+//	{ **foo }
+//	  ^^^^^
 type AssocSplatNode struct {
 	Value       Node
 	Operatorloc *Location
@@ -394,6 +475,14 @@ func (node *AssocSplatNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *AssocSplatNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents reading a reference to a field in the previous match.
+//
+//	$'
+//	^^
 type BackReferenceReadNode struct {
 	Name string
 	Loc  *Location
@@ -424,6 +513,16 @@ func (node *BackReferenceReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BackReferenceReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a begin statement.
+//
+//	begin
+//	  foo
+//	end
+//	^^^^^
 type BeginNode struct {
 	Beginkeywordloc *Location
 	Statements      *StatementsNode
@@ -485,6 +584,14 @@ func (node *BeginNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BeginNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents block method arguments.
+//
+//	bar(&args)
+//	^^^^^^^^^^
 type BlockArgumentNode struct {
 	Expression  Node
 	Operatorloc *Location
@@ -522,6 +629,14 @@ func (node *BlockArgumentNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BlockArgumentNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a block local variable.
+//
+//	a { |; b| }
+//	       ^
 type BlockLocalVariableNode struct {
 	Flags ParameterFlags
 	Name  string
@@ -559,6 +674,14 @@ func (node *BlockLocalVariableNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BlockLocalVariableNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a block of ruby code.
+//
+//	[1, 2, 3].each { |i| puts x }
+//	               ^^^^^^^^^^^^^^
 type BlockNode struct {
 	Locals     []string
 	Parameters Node
@@ -609,6 +732,15 @@ func (node *BlockNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BlockNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a block parameter to a method, block, or lambda definition.
+//
+//	def a(&b)
+//	      ^^
+//	end
 type BlockParameterNode struct {
 	Flags       ParameterFlags
 	Name        *string
@@ -652,6 +784,18 @@ func (node *BlockParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BlockParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a block's parameters declaration.
+//
+//	-> (a, b = 1; local) { }
+//	   ^^^^^^^^^^^^^^^^^
+//
+//	foo do |a, b = 1; local|
+//	       ^^^^^^^^^^^^^^^^^
+//	end
 type BlockParametersNode struct {
 	Parameters *ParametersNode
 	Locals     []Node
@@ -697,6 +841,14 @@ func (node *BlockParametersNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BlockParametersNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `break` keyword.
+//
+//	break foo
+//	^^^^^^^^^
 type BreakNode struct {
 	Arguments  *ArgumentsNode
 	Keywordloc *Location
@@ -734,6 +886,14 @@ func (node *BreakNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *BreakNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator on a call.
+//
+//	foo.bar &&= value
+//	^^^^^^^^^^^^^^^^^
 type CallAndWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -807,6 +967,29 @@ func (node *CallAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CallAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a method call, in all of the various forms that can take.
+//
+//	foo
+//	^^^
+//
+//	foo()
+//	^^^^^
+//
+//	+foo
+//	^^^^
+//
+//	foo + bar
+//	^^^^^^^^^
+//
+//	foo.bar
+//	^^^^^^^
+//
+//	foo&.bar
+//	^^^^^^^^
 type CallNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -889,6 +1072,14 @@ func (node *CallNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CallNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of an assignment operator on a call.
+//
+//	foo.bar += baz
+//	^^^^^^^^^^^^^^
 type CallOperatorWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -965,6 +1156,14 @@ func (node *CallOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CallOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator on a call.
+//
+//	foo.bar ||= value
+//	^^^^^^^^^^^^^^^^^
 type CallOrWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -1038,6 +1237,22 @@ func (node *CallOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CallOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a method call.
+//
+//	foo.bar, = 1
+//	^^^^^^^
+//
+//	begin
+//	rescue => foo.bar
+//	          ^^^^^^^
+//	end
+//
+//	for foo.bar in baz do end
+//	    ^^^^^^^
 type CallTargetNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -1098,6 +1313,14 @@ func (node *CallTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CallTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a local variable in pattern matching.
+//
+//	foo => [bar => baz]
+//	       ^^^^^^^^^^^^
 type CapturePatternNode struct {
 	Value       Node
 	Target      Node
@@ -1138,6 +1361,16 @@ func (node *CapturePatternNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CapturePatternNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of a case statement for pattern matching.
+//
+//	case true
+//	in false
+//	end
+//	^^^^^^^^^
 type CaseMatchNode struct {
 	Predicate      Node
 	Conditions     []Node
@@ -1190,6 +1423,16 @@ func (node *CaseMatchNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CaseMatchNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of a case statement.
+//
+//	case true
+//	when false
+//	end
+//	^^^^^^^^^^
 type CaseNode struct {
 	Predicate      Node
 	Conditions     []Node
@@ -1242,6 +1485,14 @@ func (node *CaseNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *CaseNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a class declaration involving the `class` keyword.
+//
+//	class Foo end
+//	^^^^^^^^^^^^^
 type ClassNode struct {
 	Locals                 []string
 	Classkeywordloc        *Location
@@ -1303,6 +1554,14 @@ func (node *ClassNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to a class variable.
+//
+//	@@target &&= value
+//	^^^^^^^^^^^^^^^^^^
 type ClassVariableAndWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1344,6 +1603,14 @@ func (node *ClassVariableAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a class variable using an operator that isn't `=`.
+//
+//	@@target += value
+//	^^^^^^^^^^^^^^^^^
 type ClassVariableOperatorWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1388,6 +1655,14 @@ func (node *ClassVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to a class variable.
+//
+//	@@target ||= value
+//	^^^^^^^^^^^^^^^^^^
 type ClassVariableOrWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1429,6 +1704,14 @@ func (node *ClassVariableOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents referencing a class variable.
+//
+//	@@foo
+//	^^^^^
 type ClassVariableReadNode struct {
 	Name string
 	Loc  *Location
@@ -1459,6 +1742,14 @@ func (node *ClassVariableReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a class variable in a context that doesn't have an explicit value.
+//
+//	@@foo, @@bar = baz
+//	^^^^^  ^^^^^
 type ClassVariableTargetNode struct {
 	Name string
 	Loc  *Location
@@ -1489,6 +1780,14 @@ func (node *ClassVariableTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a class variable.
+//
+//	@@foo = 1
+//	^^^^^^^^^
 type ClassVariableWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1530,6 +1829,14 @@ func (node *ClassVariableWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ClassVariableWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to a constant.
+//
+//	Target &&= value
+//	^^^^^^^^^^^^^^^^
 type ConstantAndWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1571,6 +1878,14 @@ func (node *ConstantAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a constant using an operator that isn't `=`.
+//
+//	Target += value
+//	^^^^^^^^^^^^^^^
 type ConstantOperatorWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1615,6 +1930,14 @@ func (node *ConstantOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to a constant.
+//
+//	Target ||= value
+//	^^^^^^^^^^^^^^^^
 type ConstantOrWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -1656,6 +1979,14 @@ func (node *ConstantOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to a constant path.
+//
+//	Parent::Child &&= value
+//	^^^^^^^^^^^^^^^^^^^^^^^
 type ConstantPathAndWriteNode struct {
 	Target      *ConstantPathNode
 	Operatorloc *Location
@@ -1696,6 +2027,14 @@ func (node *ConstantPathAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents accessing a constant through a path of `::` operators.
+//
+//	Foo::Bar
+//	^^^^^^^^
 type ConstantPathNode struct {
 	Parent       Node
 	Child        Node
@@ -1738,6 +2077,14 @@ func (node *ConstantPathNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a constant path using an operator that isn't `=`.
+//
+//	Parent::Child += value
+//	^^^^^^^^^^^^^^^^^^^^^^
 type ConstantPathOperatorWriteNode struct {
 	Target      *ConstantPathNode
 	Operatorloc *Location
@@ -1781,6 +2128,14 @@ func (node *ConstantPathOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to a constant path.
+//
+//	Parent::Child ||= value
+//	^^^^^^^^^^^^^^^^^^^^^^^
 type ConstantPathOrWriteNode struct {
 	Target      *ConstantPathNode
 	Operatorloc *Location
@@ -1821,6 +2176,14 @@ func (node *ConstantPathOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a constant path in a context that doesn't have an explicit value.
+//
+//	Foo::Foo, Bar::Bar = baz
+//	^^^^^^^^  ^^^^^^^^
 type ConstantPathTargetNode struct {
 	Parent       Node
 	Child        Node
@@ -1863,6 +2226,20 @@ func (node *ConstantPathTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a constant path.
+//
+//	::Foo = 1
+//	^^^^^^^^^
+//
+//	Foo::Bar = 1
+//	^^^^^^^^^^^^
+//
+//	::Foo::Bar = 1
+//	^^^^^^^^^^^^^^
 type ConstantPathWriteNode struct {
 	Target      *ConstantPathNode
 	Operatorloc *Location
@@ -1903,6 +2280,14 @@ func (node *ConstantPathWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantPathWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents referencing a constant.
+//
+//	Foo
+//	^^^
 type ConstantReadNode struct {
 	Name string
 	Loc  *Location
@@ -1933,6 +2318,14 @@ func (node *ConstantReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a constant in a context that doesn't have an explicit value.
+//
+//	Foo, Bar = baz
+//	^^^  ^^^
 type ConstantTargetNode struct {
 	Name string
 	Loc  *Location
@@ -1963,6 +2356,14 @@ func (node *ConstantTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a constant.
+//
+//	Foo = 1
+//	^^^^^^^
 type ConstantWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -2004,6 +2405,15 @@ func (node *ConstantWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ConstantWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a method definition.
+//
+//	def method
+//	end
+//	^^^^^^^^^^
 type DefNode struct {
 	Name          string
 	Nameloc       *Location
@@ -2079,6 +2489,14 @@ func (node *DefNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *DefNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `defined?` keyword.
+//
+//	defined?(a)
+//	^^^^^^^^^^^
 type DefinedNode struct {
 	Lparenloc  *Location
 	Value      Node
@@ -2120,6 +2538,14 @@ func (node *DefinedNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *DefinedNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an `else` clause in a `case`, `if`, or `unless` statement.
+//
+//	if a then b else c end
+//	            ^^^^^^^^^^
 type ElseNode struct {
 	Elsekeywordloc *Location
 	Statements     *StatementsNode
@@ -2160,6 +2586,14 @@ func (node *ElseNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ElseNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an interpolated set of statements.
+//
+//	"foo #{bar}"
+//	     ^^^^^^
 type EmbeddedStatementsNode struct {
 	Openingloc *Location
 	Statements *StatementsNode
@@ -2200,6 +2634,14 @@ func (node *EmbeddedStatementsNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *EmbeddedStatementsNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an interpolated variable.
+//
+//	"foo #@bar"
+//	     ^^^^^
 type EmbeddedVariableNode struct {
 	Operatorloc *Location
 	Variable    Node
@@ -2235,6 +2677,18 @@ func (node *EmbeddedVariableNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *EmbeddedVariableNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an `ensure` clause in a `begin` statement.
+//
+//	begin
+//	  foo
+//	ensure
+//	^^^^^^
+//	  bar
+//	end
 type EnsureNode struct {
 	Ensurekeywordloc *Location
 	Statements       *StatementsNode
@@ -2275,6 +2729,14 @@ func (node *EnsureNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *EnsureNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the literal `false` keyword.
+//
+//	false
+//	^^^^^
 type FalseNode struct {
 	Loc *Location
 }
@@ -2302,6 +2764,20 @@ func (node *FalseNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *FalseNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a find pattern in pattern matching.
+//
+//	foo in *bar, baz, *qux
+//	       ^^^^^^^^^^^^^^^
+//
+//	foo in [*bar, baz, *qux]
+//	       ^^^^^^^^^^^^^^^^^
+//
+//	foo in Foo(*bar, baz, *qux)
+//	       ^^^^^^^^^^^^^^^^^^^^
 type FindPatternNode struct {
 	Constant   Node
 	Left       Node
@@ -2357,6 +2833,14 @@ func (node *FindPatternNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *FindPatternNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `..` or `...` operators to create flip flops.
+//
+//	baz if foo .. bar
+//	       ^^^^^^^^^^
 type FlipFlopNode struct {
 	Flags       RangeFlags
 	Left        Node
@@ -2408,6 +2892,14 @@ func (node *FlipFlopNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *FlipFlopNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a floating point number literal.
+//
+//	1.0
+//	^^^
 type FloatNode struct {
 	Value float64
 	Loc   *Location
@@ -2438,6 +2930,14 @@ func (node *FloatNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *FloatNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `for` keyword.
+//
+//	for i in a end
+//	^^^^^^^^^^^^^^
 type ForNode struct {
 	Index         Node
 	Collection    Node
@@ -2494,6 +2994,16 @@ func (node *ForNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ForNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents forwarding all arguments to this method to another method.
+//
+//	def foo(...)
+//	  bar(...)
+//	      ^^^
+//	end
 type ForwardingArgumentsNode struct {
 	Loc *Location
 }
@@ -2521,6 +3031,15 @@ func (node *ForwardingArgumentsNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ForwardingArgumentsNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the forwarding parameter in a method, block, or lambda declaration.
+//
+//	def foo(...)
+//	        ^^^
+//	end
 type ForwardingParameterNode struct {
 	Loc *Location
 }
@@ -2548,6 +3067,14 @@ func (node *ForwardingParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ForwardingParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `super` keyword without parentheses or arguments.
+//
+//	super
+//	^^^^^
 type ForwardingSuperNode struct {
 	Block *BlockNode
 	Loc   *Location
@@ -2582,6 +3109,14 @@ func (node *ForwardingSuperNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ForwardingSuperNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to a global variable.
+//
+//	$target &&= value
+//	^^^^^^^^^^^^^^^^^
 type GlobalVariableAndWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -2623,6 +3158,14 @@ func (node *GlobalVariableAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a global variable using an operator that isn't `=`.
+//
+//	$target += value
+//	^^^^^^^^^^^^^^^^
 type GlobalVariableOperatorWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -2667,6 +3210,14 @@ func (node *GlobalVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to a global variable.
+//
+//	$target ||= value
+//	^^^^^^^^^^^^^^^^^
 type GlobalVariableOrWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -2708,6 +3259,14 @@ func (node *GlobalVariableOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents referencing a global variable.
+//
+//	$foo
+//	^^^^
 type GlobalVariableReadNode struct {
 	Name string
 	Loc  *Location
@@ -2738,6 +3297,14 @@ func (node *GlobalVariableReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a global variable in a context that doesn't have an explicit value.
+//
+//	$foo, $bar = baz
+//	^^^^  ^^^^
 type GlobalVariableTargetNode struct {
 	Name string
 	Loc  *Location
@@ -2768,6 +3335,14 @@ func (node *GlobalVariableTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a global variable.
+//
+//	$foo = 1
+//	^^^^^^^^
 type GlobalVariableWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -2809,6 +3384,14 @@ func (node *GlobalVariableWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *GlobalVariableWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a hash literal.
+//
+//	{ a => b }
+//	^^^^^^^^^^
 type HashNode struct {
 	Openingloc *Location
 	Elements   []Node
@@ -2847,6 +3430,17 @@ func (node *HashNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *HashNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a hash pattern in pattern matching.
+//
+//	foo => { a: 1, b: 2 }
+//	       ^^^^^^^^^^^^^^
+//
+//	foo => { a: 1, b: 2, **c }
+//	       ^^^^^^^^^^^^^^^^^^^
 type HashPatternNode struct {
 	Constant   Node
 	Elements   []Node
@@ -2899,6 +3493,17 @@ func (node *HashPatternNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *HashPatternNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `if` keyword, either in the block form or the modifier form.
+//
+//	bar if foo
+//	^^^^^^^^^^
+//
+//	if foo then bar end
+//	^^^^^^^^^^^^^^^^^^^
 type IfNode struct {
 	Ifkeywordloc   *Location
 	Predicate      Node
@@ -2954,6 +3559,14 @@ func (node *IfNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IfNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an imaginary number literal.
+//
+//	1.0i
+//	^^^^
 type ImaginaryNode struct {
 	Numeric Node
 	Loc     *Location
@@ -2986,6 +3599,20 @@ func (node *ImaginaryNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ImaginaryNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a node that is implicitly being added to the tree but doesn't correspond directly to a node in the source.
+//
+//	{ foo: }
+//	  ^^^^
+//
+//	{ Foo: }
+//	  ^^^^
+//
+//	foo in { bar: }
+//	         ^^^^
 type ImplicitNode struct {
 	Value Node
 	Loc   *Location
@@ -3018,6 +3645,23 @@ func (node *ImplicitNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ImplicitNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents using a trailing comma to indicate an implicit rest parameter.
+//
+//	foo { |bar,| }
+//	          ^
+//
+//	foo in [bar,]
+//	           ^
+//
+//	for foo, in bar do end
+//	       ^
+//
+//	foo, = bar
+//	   ^
 type ImplicitRestNode struct {
 	Loc *Location
 }
@@ -3045,6 +3689,14 @@ func (node *ImplicitRestNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ImplicitRestNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `in` keyword in a case statement.
+//
+//	case a; in b then c end
+//	        ^^^^^^^^^^^
 type InNode struct {
 	Pattern    Node
 	Statements *StatementsNode
@@ -3090,6 +3742,14 @@ func (node *InNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator on a call to the `[]` method.
+//
+//	foo.bar[baz] &&= value
+//	^^^^^^^^^^^^^^^^^^^^^^
 type IndexAndWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -3174,6 +3834,14 @@ func (node *IndexAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IndexAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of an assignment operator on a call to `[]`.
+//
+//	foo.bar[baz] += value
+//	^^^^^^^^^^^^^^^^^^^^^
 type IndexOperatorWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -3261,6 +3929,14 @@ func (node *IndexOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IndexOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator on a call to `[]`.
+//
+//	foo.bar[baz] ||= value
+//	^^^^^^^^^^^^^^^^^^^^^^
 type IndexOrWriteNode struct {
 	Flags           CallNodeFlags
 	Receiver        Node
@@ -3345,6 +4021,22 @@ func (node *IndexOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IndexOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to an index.
+//
+//	foo[bar], = 1
+//	^^^^^^^^
+//
+//	begin
+//	rescue => foo[bar]
+//	          ^^^^^^^^
+//	end
+//
+//	for foo[bar] in baz do end
+//	    ^^^^^^^^
 type IndexTargetNode struct {
 	Flags      CallNodeFlags
 	Receiver   Node
@@ -3416,6 +4108,14 @@ func (node *IndexTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IndexTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to an instance variable.
+//
+//	@target &&= value
+//	^^^^^^^^^^^^^^^^^
 type InstanceVariableAndWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -3457,6 +4157,14 @@ func (node *InstanceVariableAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to an instance variable using an operator that isn't `=`.
+//
+//	@target += value
+//	^^^^^^^^^^^^^^^^
 type InstanceVariableOperatorWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -3501,6 +4209,14 @@ func (node *InstanceVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to an instance variable.
+//
+//	@target ||= value
+//	^^^^^^^^^^^^^^^^^
 type InstanceVariableOrWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -3542,6 +4258,14 @@ func (node *InstanceVariableOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents referencing an instance variable.
+//
+//	@foo
+//	^^^^
 type InstanceVariableReadNode struct {
 	Name string
 	Loc  *Location
@@ -3572,6 +4296,14 @@ func (node *InstanceVariableReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to an instance variable in a context that doesn't have an explicit value.
+//
+//	@foo, @bar = baz
+//	^^^^  ^^^^
 type InstanceVariableTargetNode struct {
 	Name string
 	Loc  *Location
@@ -3602,6 +4334,14 @@ func (node *InstanceVariableTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to an instance variable.
+//
+//	@foo = 1
+//	^^^^^^^^
 type InstanceVariableWriteNode struct {
 	Name        string
 	Nameloc     *Location
@@ -3643,6 +4383,14 @@ func (node *InstanceVariableWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InstanceVariableWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an integer number literal.
+//
+//	1
+//	^
 type IntegerNode struct {
 	Flags IntegerBaseFlags
 	Value *big.Int
@@ -3692,6 +4440,14 @@ func (node *IntegerNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *IntegerNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a regular expression literal that contains interpolation that is being used in the predicate of a conditional to implicitly match against the last line read by an IO object.
+//
+//	if /foo #{bar} baz/ then end
+//	   ^^^^^^^^^^^^^^^^
 type InterpolatedMatchLastLineNode struct {
 	Flags      RegularExpressionFlags
 	Openingloc *Location
@@ -3777,6 +4533,14 @@ func (node *InterpolatedMatchLastLineNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InterpolatedMatchLastLineNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a regular expression literal that contains interpolation.
+//
+//	/foo #{bar} baz/
+//	^^^^^^^^^^^^^^^^
 type InterpolatedRegularExpressionNode struct {
 	Flags      RegularExpressionFlags
 	Openingloc *Location
@@ -3862,6 +4626,14 @@ func (node *InterpolatedRegularExpressionNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InterpolatedRegularExpressionNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a string literal that contains interpolation.
+//
+//	"foo #{bar} baz"
+//	^^^^^^^^^^^^^^^^
 type InterpolatedStringNode struct {
 	Openingloc *Location
 	Parts      []Node
@@ -3900,6 +4672,14 @@ func (node *InterpolatedStringNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InterpolatedStringNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a symbol literal that contains interpolation.
+//
+//	:"foo #{bar} baz"
+//	^^^^^^^^^^^^^^^^^
 type InterpolatedSymbolNode struct {
 	Openingloc *Location
 	Parts      []Node
@@ -3938,6 +4718,14 @@ func (node *InterpolatedSymbolNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InterpolatedSymbolNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an xstring literal that contains interpolation.
+//
+//	`foo #{bar} baz`
+//	^^^^^^^^^^^^^^^^
 type InterpolatedXStringNode struct {
 	Openingloc *Location
 	Parts      []Node
@@ -3976,6 +4764,14 @@ func (node *InterpolatedXStringNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *InterpolatedXStringNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an implicit set of parameters through the use of the `it` keyword within a block or lambda.
+//
+//	-> { it + it }
+//	^^^^^^^^^^^^^^
 type ItParametersNode struct {
 	Loc *Location
 }
@@ -4003,6 +4799,14 @@ func (node *ItParametersNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ItParametersNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a hash literal without opening and closing braces.
+//
+//	foo(a: b)
+//	    ^^^^
 type KeywordHashNode struct {
 	Flags    KeywordHashNodeFlags
 	Elements []Node
@@ -4042,6 +4846,15 @@ func (node *KeywordHashNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *KeywordHashNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a keyword rest parameter to a method, block, or lambda definition.
+//
+//	def a(**b)
+//	      ^^^
+//	end
 type KeywordRestParameterNode struct {
 	Flags       ParameterFlags
 	Name        *string
@@ -4085,6 +4898,14 @@ func (node *KeywordRestParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *KeywordRestParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents using a lambda literal (not the lambda method call).
+//
+//	->(value) { value * 2 }
+//	^^^^^^^^^^^^^^^^^^^^^^^
 type LambdaNode struct {
 	Locals      []string
 	Operatorloc *Location
@@ -4138,6 +4959,14 @@ func (node *LambdaNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LambdaNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `&&=` operator for assignment to a local variable.
+//
+//	target &&= value
+//	^^^^^^^^^^^^^^^^
 type LocalVariableAndWriteNode struct {
 	Nameloc     *Location
 	Operatorloc *Location
@@ -4182,6 +5011,14 @@ func (node *LocalVariableAndWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableAndWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents assigning to a local variable using an operator that isn't `=`.
+//
+//	target += value
+//	^^^^^^^^^^^^^^^
 type LocalVariableOperatorWriteNode struct {
 	Nameloc     *Location
 	Operatorloc *Location
@@ -4229,6 +5066,14 @@ func (node *LocalVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableOperatorWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||=` operator for assignment to a local variable.
+//
+//	target ||= value
+//	^^^^^^^^^^^^^^^^
 type LocalVariableOrWriteNode struct {
 	Nameloc     *Location
 	Operatorloc *Location
@@ -4273,6 +5118,14 @@ func (node *LocalVariableOrWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableOrWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents reading a local variable. Note that this requires that a local variable of the same name has already been written to in the same scope, otherwise it is parsed as a method call.
+//
+//	foo
+//	^^^
 type LocalVariableReadNode struct {
 	Name  string
 	Depth uint32
@@ -4306,6 +5159,14 @@ func (node *LocalVariableReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a local variable in a context that doesn't have an explicit value.
+//
+//	foo, bar = baz
+//	^^^  ^^^
 type LocalVariableTargetNode struct {
 	Name  string
 	Depth uint32
@@ -4339,6 +5200,14 @@ func (node *LocalVariableTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing to a local variable.
+//
+//	foo = 1
+//	^^^^^^^
 type LocalVariableWriteNode struct {
 	Name        string
 	Depth       uint32
@@ -4383,6 +5252,14 @@ func (node *LocalVariableWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *LocalVariableWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a regular expression literal used in the predicate of a conditional to implicitly match against the last line read by an IO object.
+//
+//	if /foo/i then end
+//	   ^^^^^^
 type MatchLastLineNode struct {
 	Flags      RegularExpressionFlags
 	Openingloc *Location
@@ -4469,6 +5346,14 @@ func (node *MatchLastLineNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MatchLastLineNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the modifier `in` operator.
+//
+//	foo in bar
+//	^^^^^^^^^^
 type MatchPredicateNode struct {
 	Value       Node
 	Pattern     Node
@@ -4509,6 +5394,14 @@ func (node *MatchPredicateNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MatchPredicateNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `=>` operator.
+//
+//	foo => bar
+//	^^^^^^^^^^
 type MatchRequiredNode struct {
 	Value       Node
 	Pattern     Node
@@ -4549,6 +5442,14 @@ func (node *MatchRequiredNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MatchRequiredNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents writing local variables using a regular expression match with named capture groups.
+//
+//	/(?<foo>bar)/ =~ baz
+//	^^^^^^^^^^^^^^^^^^^^
 type MatchWriteNode struct {
 	Call    *CallNode
 	Targets []Node
@@ -4586,6 +5487,11 @@ func (node *MatchWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MatchWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a node that is missing from the source and results in a syntax error.
 type MissingNode struct {
 	Loc *Location
 }
@@ -4613,6 +5519,14 @@ func (node *MissingNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MissingNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a module declaration involving the `module` keyword.
+//
+//	module Foo end
+//	^^^^^^^^^^^^^^
 type ModuleNode struct {
 	Locals           []string
 	Modulekeywordloc *Location
@@ -4664,6 +5578,14 @@ func (node *ModuleNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ModuleNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a multi-target expression.
+//
+//	a, (b, c) = 1, 2, 3
+//	   ^^^^^^
 type MultiTargetNode struct {
 	Lefts     []Node
 	Rest      Node
@@ -4714,6 +5636,14 @@ func (node *MultiTargetNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MultiTargetNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a write to a multi-target expression.
+//
+//	a, b, c = 1, 2, 3
+//	^^^^^^^^^^^^^^^^^
 type MultiWriteNode struct {
 	Lefts       []Node
 	Rest        Node
@@ -4772,6 +5702,14 @@ func (node *MultiWriteNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *MultiWriteNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `next` keyword.
+//
+//	next 1
+//	^^^^^^
 type NextNode struct {
 	Arguments  *ArgumentsNode
 	Keywordloc *Location
@@ -4809,6 +5747,14 @@ func (node *NextNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *NextNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `nil` keyword.
+//
+//	nil
+//	^^^
 type NilNode struct {
 	Loc *Location
 }
@@ -4836,6 +5782,15 @@ func (node *NilNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *NilNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of `**nil` inside method arguments.
+//
+//	def a(**nil)
+//	      ^^^^^
+//	end
 type NoKeywordsParameterNode struct {
 	Operatorloc *Location
 	Keywordloc  *Location
@@ -4869,6 +5824,14 @@ func (node *NoKeywordsParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *NoKeywordsParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an implicit set of parameters through the use of numbered parameters within a block or lambda.
+//
+//	-> { _1 + _2 }
+//	^^^^^^^^^^^^^^
 type NumberedParametersNode struct {
 	Maximum uint8
 	Loc     *Location
@@ -4899,6 +5862,14 @@ func (node *NumberedParametersNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *NumberedParametersNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents reading a numbered reference to a capture in the previous match.
+//
+//	$1
+//	^^
 type NumberedReferenceReadNode struct {
 	Number uint32
 	Loc    *Location
@@ -4929,6 +5900,15 @@ func (node *NumberedReferenceReadNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *NumberedReferenceReadNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an optional keyword parameter to a method, block, or lambda definition.
+//
+//	def a(b: 1)
+//	      ^^^^
+//	end
 type OptionalKeywordParameterNode struct {
 	Flags   ParameterFlags
 	Name    string
@@ -4974,6 +5954,15 @@ func (node *OptionalKeywordParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *OptionalKeywordParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an optional parameter to a method, block, or lambda definition.
+//
+//	def a(b = 1)
+//	      ^^^^^
+//	end
 type OptionalParameterNode struct {
 	Flags       ParameterFlags
 	Name        string
@@ -5022,6 +6011,14 @@ func (node *OptionalParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *OptionalParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `||` operator or the `or` keyword.
+//
+//	left or right
+//	^^^^^^^^^^^^^
 type OrNode struct {
 	Left        Node
 	Right       Node
@@ -5062,6 +6059,15 @@ func (node *OrNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *OrNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the list of parameters on a method, block, or lambda definition.
+//
+//	def a(b, c, d)
+//	      ^^^^^^^
+//	end
 type ParametersNode struct {
 	Requireds   []Node
 	Optionals   []Node
@@ -5130,6 +6136,14 @@ func (node *ParametersNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ParametersNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a parenthesized expression
+//
+//	(10 + 34)
+//	^^^^^^^^^
 type ParenthesesNode struct {
 	Body       Node
 	Openingloc *Location
@@ -5170,6 +6184,14 @@ func (node *ParenthesesNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ParenthesesNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `^` operator for pinning an expression in a pattern matching expression.
+//
+//	foo in ^(bar)
+//	       ^^^^^^
 type PinnedExpressionNode struct {
 	Expression  Node
 	Operatorloc *Location
@@ -5211,6 +6233,14 @@ func (node *PinnedExpressionNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *PinnedExpressionNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `^` operator for pinning a variable in a pattern matching expression.
+//
+//	foo in ^bar
+//	       ^^^^
 type PinnedVariableNode struct {
 	Variable    Node
 	Operatorloc *Location
@@ -5246,6 +6276,14 @@ func (node *PinnedVariableNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *PinnedVariableNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `END` keyword.
+//
+//	END { foo }
+//	^^^^^^^^^^^
 type PostExecutionNode struct {
 	Statements *StatementsNode
 	Keywordloc *Location
@@ -5289,6 +6327,14 @@ func (node *PostExecutionNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *PostExecutionNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `BEGIN` keyword.
+//
+//	BEGIN { foo }
+//	^^^^^^^^^^^^^
 type PreExecutionNode struct {
 	Statements *StatementsNode
 	Keywordloc *Location
@@ -5332,6 +6378,11 @@ func (node *PreExecutionNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *PreExecutionNode) Location() *Location {
+	return node.Loc
+}
+
+// The top level node of any parse tree.
 type ProgramNode struct {
 	Locals     []string
 	Statements *StatementsNode
@@ -5367,6 +6418,17 @@ func (node *ProgramNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ProgramNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `..` or `...` operators.
+//
+//	1..2
+//	^^^^
+//
+//	c if a =~ /left/ ... b =~ /right/
+//	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 type RangeNode struct {
 	Flags       RangeFlags
 	Left        Node
@@ -5418,6 +6480,14 @@ func (node *RangeNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RangeNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a rational number literal.
+//
+//	1.0r
+//	^^^^
 type RationalNode struct {
 	Numeric Node
 	Loc     *Location
@@ -5450,6 +6520,14 @@ func (node *RationalNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RationalNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `redo` keyword.
+//
+//	redo
+//	^^^^
 type RedoNode struct {
 	Loc *Location
 }
@@ -5477,6 +6555,14 @@ func (node *RedoNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RedoNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a regular expression literal with no interpolation.
+//
+//	/foo/i
+//	^^^^^^
 type RegularExpressionNode struct {
 	Flags      RegularExpressionFlags
 	Openingloc *Location
@@ -5563,6 +6649,15 @@ func (node *RegularExpressionNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RegularExpressionNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a required keyword parameter to a method, block, or lambda definition.
+//
+//	def a(b: )
+//	      ^^
+//	end
 type RequiredKeywordParameterNode struct {
 	Flags   ParameterFlags
 	Name    string
@@ -5603,6 +6698,15 @@ func (node *RequiredKeywordParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RequiredKeywordParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a required parameter to a method, block, or lambda definition.
+//
+//	def a(b)
+//	      ^
+//	end
 type RequiredParameterNode struct {
 	Flags ParameterFlags
 	Name  string
@@ -5640,6 +6744,14 @@ func (node *RequiredParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RequiredParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an expression modified with a rescue.
+//
+//	foo rescue nil
+//	^^^^^^^^^^^^^^
 type RescueModifierNode struct {
 	Expression       Node
 	Keywordloc       *Location
@@ -5680,6 +6792,19 @@ func (node *RescueModifierNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RescueModifierNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a rescue statement.
+//
+//	begin
+//	rescue Foo, *splat, Bar => ex
+//	  foo
+//	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//	end
+//
+// `Foo, *splat, Bar` are in the `exceptions` field. `ex` is in the `exception` field.
 type RescueNode struct {
 	Keywordloc  *Location
 	Exceptions  []Node
@@ -5739,6 +6864,15 @@ func (node *RescueNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RescueNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a rest parameter to a method, block, or lambda definition.
+//
+//	def a(*b)
+//	      ^^
+//	end
 type RestParameterNode struct {
 	Flags       ParameterFlags
 	Name        *string
@@ -5782,6 +6916,14 @@ func (node *RestParameterNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RestParameterNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `retry` keyword.
+//
+//	retry
+//	^^^^^
 type RetryNode struct {
 	Loc *Location
 }
@@ -5809,6 +6951,14 @@ func (node *RetryNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *RetryNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `return` keyword.
+//
+//	return 1
+//	^^^^^^^^
 type ReturnNode struct {
 	Keywordloc *Location
 	Arguments  *ArgumentsNode
@@ -5846,6 +6996,14 @@ func (node *ReturnNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *ReturnNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the `self` keyword.
+//
+//	self
+//	^^^^
 type SelfNode struct {
 	Loc *Location
 }
@@ -5873,6 +7031,14 @@ func (node *SelfNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SelfNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a singleton class declaration involving the `class` keyword.
+//
+//	class << self end
+//	^^^^^^^^^^^^^^^^^
 type SingletonClassNode struct {
 	Locals          []string
 	Classkeywordloc *Location
@@ -5924,6 +7090,14 @@ func (node *SingletonClassNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SingletonClassNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `__ENCODING__` keyword.
+//
+//	__ENCODING__
+//	^^^^^^^^^^^^
 type SourceEncodingNode struct {
 	Loc *Location
 }
@@ -5951,6 +7125,14 @@ func (node *SourceEncodingNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SourceEncodingNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `__FILE__` keyword.
+//
+//	__FILE__
+//	^^^^^^^^
 type SourceFileNode struct {
 	Filepath string
 	Loc      *Location
@@ -5981,6 +7163,14 @@ func (node *SourceFileNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SourceFileNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `__LINE__` keyword.
+//
+//	__LINE__
+//	^^^^^^^^
 type SourceLineNode struct {
 	Loc *Location
 }
@@ -6008,6 +7198,14 @@ func (node *SourceLineNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SourceLineNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the splat operator.
+//
+//	[*a]
+//	 ^^
 type SplatNode struct {
 	Operatorloc *Location
 	Expression  Node
@@ -6045,6 +7243,14 @@ func (node *SplatNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SplatNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a set of statements contained within some scope.
+//
+//	foo; bar; baz
+//	^^^^^^^^^^^^^
 type StatementsNode struct {
 	Body []Node
 	Loc  *Location
@@ -6077,6 +7283,20 @@ func (node *StatementsNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *StatementsNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a string literal, a string contained within a `%w` list, or plain string content within an interpolated string.
+//
+//	"foo"
+//	^^^^^
+//
+//	%w[foo]
+//	   ^^^
+//
+//	"foo #{bar} baz"
+//	 ^^^^      ^^^^
 type StringNode struct {
 	Flags      StringFlags
 	Openingloc *Location
@@ -6131,6 +7351,17 @@ func (node *StringNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *StringNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `super` keyword with parentheses or arguments.
+//
+//	super()
+//	^^^^^^^
+//
+//	super foo, bar
+//	^^^^^^^^^^^^^^
 type SuperNode struct {
 	Keywordloc *Location
 	Lparenloc  *Location
@@ -6181,6 +7412,17 @@ func (node *SuperNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SuperNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents a symbol literal or a symbol contained within a `%i` list.
+//
+//	:foo
+//	^^^^
+//
+//	%i[foo]
+//	   ^^^
 type SymbolNode struct {
 	Flags      SymbolFlags
 	Openingloc *Location
@@ -6235,6 +7477,14 @@ func (node *SymbolNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *SymbolNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the literal `true` keyword.
+//
+//	true
+//	^^^^
 type TrueNode struct {
 	Loc *Location
 }
@@ -6262,6 +7512,14 @@ func (node *TrueNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *TrueNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `undef` keyword.
+//
+//	undef :foo, :bar, :baz
+//	^^^^^^^^^^^^^^^^^^^^^^
 type UndefNode struct {
 	Names      []Node
 	Keywordloc *Location
@@ -6297,6 +7555,17 @@ func (node *UndefNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *UndefNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `unless` keyword, either in the block form or the modifier form.
+//
+//	bar unless foo
+//	^^^^^^^^^^^^^^
+//
+//	unless foo then bar end
+//	^^^^^^^^^^^^^^^^^^^^^^^
 type UnlessNode struct {
 	Keywordloc     *Location
 	Predicate      Node
@@ -6352,6 +7621,17 @@ func (node *UnlessNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *UnlessNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `until` keyword, either in the block form or the modifier form.
+//
+//	bar until foo
+//	^^^^^^^^^^^^^
+//
+//	until foo do bar end
+//	^^^^^^^^^^^^^^^^^^^^
 type UntilNode struct {
 	Flags      LoopFlags
 	Keywordloc *Location
@@ -6404,6 +7684,16 @@ func (node *UntilNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *UntilNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `when` keyword within a case statement.
+//
+//	case true
+//	when true
+//	^^^^^^^^^
+//	end
 type WhenNode struct {
 	Keywordloc     *Location
 	Conditions     []Node
@@ -6449,6 +7739,17 @@ func (node *WhenNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *WhenNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `while` keyword, either in the block form or the modifier form.
+//
+//	bar while foo
+//	^^^^^^^^^^^^^
+//
+//	while foo do bar end
+//	^^^^^^^^^^^^^^^^^^^^
 type WhileNode struct {
 	Flags      LoopFlags
 	Keywordloc *Location
@@ -6501,6 +7802,14 @@ func (node *WhileNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *WhileNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents an xstring literal with no interpolation.
+//
+//	`foo`
+//	^^^^^
 type XStringNode struct {
 	Flags      EncodingFlags
 	Openingloc *Location
@@ -6551,6 +7860,14 @@ func (node *XStringNode) MarshalJSON() ([]byte, error) {
 	})
 }
 
+func (node *XStringNode) Location() *Location {
+	return node.Loc
+}
+
+// Represents the use of the `yield` keyword.
+//
+//	yield 1
+//	^^^^^^^
 type YieldNode struct {
 	Keywordloc *Location
 	Lparenloc  *Location
@@ -6592,4 +7909,8 @@ func (node *YieldNode) MarshalJSON() ([]byte, error) {
 		"rparenLoc":  node.Rparenloc,
 		"loc":        node.Loc,
 	})
+}
+
+func (node *YieldNode) Location() *Location {
+	return node.Loc
 }
