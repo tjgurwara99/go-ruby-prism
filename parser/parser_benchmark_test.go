@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/danielgatis/go-ruby-prism/parser"
+	"github.com/tjgurwara99/go-ruby-prism/parser"
 )
 
 func clone(repo, output string) {

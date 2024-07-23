@@ -1,4 +1,4 @@
-module github.com/danielgatis/go-ruby-prism
+module github.com/tjgurwara99/go-ruby-prism
 
 go 1.22
 

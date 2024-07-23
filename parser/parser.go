@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/danielgatis/go-ruby-prism/wasm"
+	"github.com/tjgurwara99/go-ruby-prism/wasm"
 )
 
 type Parser struct {

@@ -1,6 +1,6 @@
 # go-ruby-prism
 
-This is a fork of [go-ruby-prism](https://github.com/danielgatis/go-ruby-prism).
+This is a fork of [go-ruby-prism](https://github.com/tjgurwara99/go-ruby-prism).
 I wanted to use it but I did't need some of the package dependencies, so I've cleaned
 them up - I don't think the author wants this change so I'm keeping it in the fork and
 not opening a PR upstream.
@@ -25,7 +25,7 @@ import (
 	"context"
 	"fmt"
 
-	parser "github.com/danielgatis/go-ruby-prism/parser"
+	parser "github.com/tjgurwara99/go-ruby-prism/parser"
 )
 
 func main() {
@@ -39,7 +39,6 @@ func main() {
 ```
 
 You can find more examples in the examples folder.
-
 
 ## License
 
