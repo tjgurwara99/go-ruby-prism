@@ -1,8 +1,9 @@
 # go-ruby-prism
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/danielgatis/go-ruby-prism?style=flat-square)](https://goreportcard.com/report/github.com/danielgatis/go-ruby-prism)
-[![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/danielgatis/go-ruby-prism/master/LICENSE)
-[![Go Doc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/danielgatis/go-ruby-prism)
+This is a fork of [go-ruby-prism](https://github.com/danielgatis/go-ruby-prism).
+I wanted to use it but I did't need some of the package dependencies, so I've cleaned
+them up - I don't think the author wants this change so I'm keeping it in the fork and
+not opening a PR upstream.
 
 The go-ruby-prism is package that leverages the Ruby Prism parser compiled to WebAssembly for parsing Ruby code without the need for CGO.
 
@@ -42,7 +43,6 @@ You can find more examples in the examples folder.
 
 ## License
 
-Copyright (c) 2024-present [Daniel Gatis](https://github.com/danielgatis)
+Original Copyright Notice would remain in this repository under (c) 2024-present [Daniel Gatis](https://github.com/danielgatis)
 
 Licensed under [MIT License](./LICENSE.txt)
-
