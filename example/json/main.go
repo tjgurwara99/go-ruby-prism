@@ -18,7 +18,7 @@ func main() {
 	source := "puts 'Hello, World!'"
 	result, err := p.Parse(ctx, source)
 	if err != nil {
-		fmt.Println(parser.ErrToStr(err))
+		fmt.Println(err)
 		os.Exit(1)
 	}
 

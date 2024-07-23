@@ -14,10 +14,13 @@ type NodeVisitor interface {
 type Node interface {
 	Accept(NodeVisitor)
   Children() []Node
+  Location() *Location
 }
 
 <%- nodes.each do |node| -%>
-type <%= node.name %> struct {
+<%- node.comment.split("\n").each do |line| -%>
+// <%= line %>
+<% end %>type <%= node.name %> struct {
   <%- node.fields.each do |field| -%>
   <%- if field.is_a?(Prism::Template::FlagsField) -%>
   Flags <%= gotype(field) %>;
@@ -80,6 +83,10 @@ func (node *<%= node.name %>) MarshalJSON() ([]byte, error) {
   <%- end -%>
   "loc": node.Loc,
  })
+}
+
+func (node *<%= node.name%>) Location() *Location {
+  return node.Loc
 }
 
 <%- end -%>

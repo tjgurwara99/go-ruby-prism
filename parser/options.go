@@ -3,8 +3,7 @@ package parser
 import (
 	"bytes"
 	"encoding/binary"
-
-	"github.com/rotisserie/eris"
+	"fmt"
 )
 
 type parseOptions struct {
@@ -26,37 +25,37 @@ func (o *parseOptions) bytes() ([]byte, error) {
 
 	// filepath
 	if _, err := buffer.Write(strToBytes(o.filepath)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the length of the filepath")
+		return nil, fmt.Errorf("failed to write the length of the filepath: %w", err)
 	}
 
 	// line
 	if _, err := buffer.Write(intToBytes(o.line)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the line")
+		return nil, fmt.Errorf("failed to write the line: %w", err)
 	}
 
 	// encoding
 	if _, err := buffer.Write(strToBytes(o.encoding)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the length of the encoding")
+		return nil, fmt.Errorf("failed to write the length of the encoding: %w", err)
 	}
 
 	// frozenStringLiteral
 	if _, err := buffer.Write(boolToBytes(o.frozenStringLiteral)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the frozenStringLiteral")
+		return nil, fmt.Errorf("failed to write the frozenStringLiteral: %w", err)
 	}
 
 	// command line
 	if _, err := buffer.Write(bitsetToBytes(o.commandLine)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the command line")
+		return nil, fmt.Errorf("failed to write the command line: %w", err)
 	}
 
 	// version
 	if err := buffer.WriteByte(byte(o.version)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the version")
+		return nil, fmt.Errorf("failed to write the version: %w", err)
 	}
 
 	// scopes
 	if _, err := buffer.Write(b3ToBytes(o.scopes)); err != nil {
-		return nil, eris.Wrap(err, "failed to write the length of the scopes")
+		return nil, fmt.Errorf("failed to write the length of the scopes: %w", err)
 	}
 
 	return buffer.Bytes(), nil

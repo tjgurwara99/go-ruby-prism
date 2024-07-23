@@ -2,8 +2,8 @@ package parser
 
 import (
 	"bytes"
-
-	"github.com/rotisserie/eris"
+	"errors"
+	"fmt"
 )
 
 const prismHeader = "PRISM"
@@ -18,97 +18,94 @@ func deserialize(serialized []byte, source []byte) (*ParseResult, error) {
 	header := make([]byte, 5)
 	_, err := buff.read(header)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading header")
+		return nil, fmt.Errorf("error reading header: %w", err)
 	}
 
 	if !bytes.Equal(header, []byte(prismHeader)) {
-		return nil, eris.New("invalid prism header")
+		return nil, errors.New("invalid prism header")
 	}
 
 	// check version
 	version := make([]byte, 3)
 	_, err = buff.read(version)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading version")
+		return nil, fmt.Errorf("error reading version: %w", err)
 	}
 
 	if !bytes.Equal(version, []byte{majorVersion, minorVersion, patchVersion}) {
-		return nil, eris.New("invalid version number")
+		return nil, errors.New("invalid version number")
 	}
 
 	// check location
 	var location = make([]byte, 1)
 	_, err = buff.read(location)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading location")
+		return nil, fmt.Errorf("error reading location: %w", err)
 	}
 
 	if !bytes.Equal(location, []byte{0}) {
-		return nil, eris.New("requires no location fields in the serialized output")
+		return nil, errors.New("requires no location fields in the serialized output")
 	}
 
 	// reading encoding and discard it is always UTF-8
 	encodingLen, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading encoding length")
+		return nil, fmt.Errorf("error reading encoding length: %w", err)
 	}
 
 	var encoding = make([]byte, encodingLen)
 	_, err = buff.read(encoding)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading encoding")
+		return nil, fmt.Errorf("error reading encoding: %w", err)
 	}
 
 	// skip start line and line offsets
 	_, err = loadVarSInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading start line")
+		return nil, fmt.Errorf("error reading start line: %w", err)
 	}
 
 	_, err = loadLineOffsets(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading line offsets")
+		return nil, fmt.Errorf("error reading line offsets: %w", err)
 	}
 
 	// load magic comments
 	comments, err := loadComments(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading comments")
+		return nil, fmt.Errorf("error reading comments: %w", err)
 	}
 
 	// load magic comments
 	magicComments, err := loadMagicComments(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading magic comments")
+		return nil, fmt.Errorf("error reading magic comments: %w", err)
 	}
 
 	// load optional locations
 	dataLocation, err := loadOptionalLocation(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading data location")
+		return nil, fmt.Errorf("error reading data location: %w", err)
 	}
 
 	// load syntax errors
 	synErrors, err := loadSynErrors(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading syntax errors")
+		return nil, fmt.Errorf("error reading syntax errors: %w", err)
 	}
 
 	// load syntax warnings
 	synWarnings, err := loadSynWarnings(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading syntax warnings")
+		return nil, fmt.Errorf("error reading syntax warnings: %w", err)
 	}
 
 	// build constant pool
 	constantPoolBufferOffset := buff.readUInt32()
-	if err != nil {
-		return nil, eris.Wrap(err, "error reading constant pool buff offset")
-	}
 
 	constantPoolLength, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading constant pool length")
+		return nil, fmt.Errorf("error reading constant pool length: %w", err)
 	}
 
 	constantPool := newConstantPool(
@@ -121,7 +118,7 @@ func deserialize(serialized []byte, source []byte) (*ParseResult, error) {
 	// load first node
 	node, err := loadNode(buff, source, constantPool)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading first node")
+		return nil, fmt.Errorf("error reading first node: %w", err)
 	}
 
 	// build parse result

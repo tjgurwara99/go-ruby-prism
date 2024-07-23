@@ -3,8 +3,8 @@ package wasm
 import (
 	"context"
 	_ "embed"
+	"fmt"
 
-	"github.com/rotisserie/eris"
 	"github.com/tetratelabs/wazero"
 	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
@@ -40,7 +40,7 @@ func NewModFunc(mod api.Module, name string) *ModFunc {
 func (f *ModFunc) Call(ctx context.Context, params ...uint64) (uint64, error) {
 	result, err := f.fn.Call(ctx, params...)
 	if err != nil {
-		return 0, eris.Wrap(err, "failed to call the wasm func")
+		return 0, fmt.Errorf("failed to call the wasm func: %w", err)
 	}
 
 	if len(result) > 0 {
@@ -61,6 +61,7 @@ type Runtime struct {
 	modPmBufferValue    *ModFunc
 	modPmBufferLength   *ModFunc
 	modPmBufferFree     *ModFunc
+	modPmPrettyPrint    *ModFunc
 }
 
 func NewRuntime(ctx context.Context) (*Runtime, error) {
@@ -69,7 +70,7 @@ func NewRuntime(ctx context.Context) (*Runtime, error) {
 	wasi_snapshot_preview1.MustInstantiate(ctx, runtime)
 	mod, err := runtime.Instantiate(ctx, prismWasm)
 	if err != nil {
-		return nil, eris.Wrap(err, "failed to instantiate prism")
+		return nil, fmt.Errorf("failed to instantiate prism: %w", err)
 	}
 
 	return &Runtime{
@@ -83,12 +84,13 @@ func NewRuntime(ctx context.Context) (*Runtime, error) {
 		modPmBufferValue:    NewModFunc(mod, "pm_buffer_value"),
 		modPmBufferLength:   NewModFunc(mod, "pm_buffer_length"),
 		modPmBufferFree:     NewModFunc(mod, "pm_buffer_free"),
+		modPmPrettyPrint:    NewModFunc(mod, "pm_prettyprint"),
 	}, nil
 }
 
 func (r *Runtime) Close(ctx context.Context) error {
 	if err := r.runtime.Close(ctx); err != nil {
-		return eris.Wrap(err, "failed to close the runtime")
+		return fmt.Errorf("failed to close the runtime: %w", err)
 	}
 
 	return nil
@@ -122,6 +124,11 @@ func (r *Runtime) BufferLength(ctx context.Context, bufferPtr uint64) (uint64, e
 
 func (r *Runtime) BufferFree(ctx context.Context, bufferPtr uint64) error {
 	_, err := r.modPmBufferFree.Call(ctx, bufferPtr)
+	return err
+}
+
+func (r *Runtime) PrettyPrint(ctx context.Context, bufferPtr uint64, parserPtr uint64, nodePtr uint64) error {
+	_, err := r.modPmPrettyPrint.Call(ctx, bufferPtr, parserPtr, nodePtr)
 	return err
 }
 

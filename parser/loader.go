@@ -1,9 +1,8 @@
 package parser
 
 import (
+	"fmt"
 	"math/big"
-
-	"github.com/rotisserie/eris"
 )
 
 func loadVarUInt(buff *buffer) (uint32, error) {
@@ -13,7 +12,7 @@ func loadVarUInt(buff *buffer) (uint32, error) {
 	for {
 		byte, err := buff.readByte()
 		if err != nil {
-			return 0, eris.Wrap(err, "error reading byte")
+			return 0, fmt.Errorf("error reading byte: %w", err)
 		}
 
 		result += uint32(byte&0x7F) << shift
@@ -30,7 +29,7 @@ func loadVarUInt(buff *buffer) (uint32, error) {
 func loadVarSInt(buff *buffer) (int32, error) {
 	x, err := loadVarUInt(buff)
 	if err != nil {
-		return 0, eris.Wrap(err, "error reading VarUInt")
+		return 0, fmt.Errorf("error reading VarUInt: %w", err)
 	}
 
 	return int32((x >> 1) ^ (-(x & 1))), nil
@@ -39,14 +38,14 @@ func loadVarSInt(buff *buffer) (int32, error) {
 func loadLineOffsets(buff *buffer) ([]uint32, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading line offsets count")
+		return nil, fmt.Errorf("error reading line offsets count: %w", err)
 	}
 
 	lineOffsets := make([]uint32, count)
 	for i := range count {
 		lineOffsets[i], err = loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading line offset")
+			return nil, fmt.Errorf("error reading line offset: %w", err)
 		}
 	}
 
@@ -56,12 +55,12 @@ func loadLineOffsets(buff *buffer) ([]uint32, error) {
 func loadLocation(buff *buffer) (*Location, error) {
 	startOffset, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading location startOffset")
+		return nil, fmt.Errorf("error reading location startOffset: %w", err)
 	}
 
 	length, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading location length")
+		return nil, fmt.Errorf("error reading location length: %w", err)
 	}
 
 	return NewLocation(startOffset, length), nil
@@ -70,7 +69,7 @@ func loadLocation(buff *buffer) (*Location, error) {
 func loadComments(buff *buffer) ([]*Comment, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading comments count")
+		return nil, fmt.Errorf("error reading comments count: %w", err)
 	}
 
 	comments := make([]*Comment, count)
@@ -78,12 +77,12 @@ func loadComments(buff *buffer) ([]*Comment, error) {
 	for i := range count {
 		typpe, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading comment type")
+			return nil, fmt.Errorf("error reading comment type: %w", err)
 		}
 
 		loc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading comment value location")
+			return nil, fmt.Errorf("error reading comment value location: %w", err)
 		}
 
 		comment := NewComment(typpe, loc)
@@ -96,7 +95,7 @@ func loadComments(buff *buffer) ([]*Comment, error) {
 func loadMagicComments(buff *buffer) ([]*MagicComment, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading magic comments count")
+		return nil, fmt.Errorf("error reading magic comments count: %w", err)
 	}
 
 	comments := make([]*MagicComment, count)
@@ -104,12 +103,12 @@ func loadMagicComments(buff *buffer) ([]*MagicComment, error) {
 	for i := range count {
 		keyLocation, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading magic comment key location")
+			return nil, fmt.Errorf("error reading magic comment key location: %w", err)
 		}
 
 		valueLocation, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading magic comment value location")
+			return nil, fmt.Errorf("error reading magic comment value location: %w", err)
 		}
 
 		comment := NewMagicComment(keyLocation, valueLocation)
@@ -122,7 +121,7 @@ func loadMagicComments(buff *buffer) ([]*MagicComment, error) {
 func loadOptionalLocation(buff *buffer) (*Location, error) {
 	nextByte, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading optional location")
+		return nil, fmt.Errorf("error reading optional location: %w", err)
 	}
 
 	if nextByte == 0 {
@@ -131,7 +130,7 @@ func loadOptionalLocation(buff *buffer) (*Location, error) {
 
 	location, err := loadLocation(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading location")
+		return nil, fmt.Errorf("error reading location: %w", err)
 	}
 
 	return location, nil
@@ -140,29 +139,29 @@ func loadOptionalLocation(buff *buffer) (*Location, error) {
 func loadSynErrors(buff *buffer) ([]*SyntaxError, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading errors count")
+		return nil, fmt.Errorf("error reading errors count: %w", err)
 	}
 
 	synErrs := make([]*SyntaxError, count)
 	for i := range count {
 		errorType, err := buff.readByte()
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading error type")
+			return nil, fmt.Errorf("error reading error type: %w", err)
 		}
 
 		messageBytes, err := loadEmbeddedStr(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading error message")
+			return nil, fmt.Errorf("error reading error message: %w", err)
 		}
 
 		location, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading error location")
+			return nil, fmt.Errorf("error reading error location: %w", err)
 		}
 
 		errorLevel, err := buff.readByte()
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading error level")
+			return nil, fmt.Errorf("error reading error level: %w", err)
 		}
 
 		synErrs[i] = NewSyntaxError(
@@ -179,29 +178,29 @@ func loadSynErrors(buff *buffer) ([]*SyntaxError, error) {
 func loadSynWarnings(buff *buffer) ([]*SyntaxWarning, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading warnings count")
+		return nil, fmt.Errorf("error reading warnings count: %w", err)
 	}
 
 	synWarnings := make([]*SyntaxWarning, count)
 	for i := range count {
 		warningType, err := buff.readByte()
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading warning type")
+			return nil, fmt.Errorf("error reading warning type: %w", err)
 		}
 
 		messageBytes, err := loadEmbeddedStr(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading warning message")
+			return nil, fmt.Errorf("error reading warning message: %w", err)
 		}
 
 		location, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading warning location")
+			return nil, fmt.Errorf("error reading warning location: %w", err)
 		}
 
 		warningLevel, err := buff.readByte()
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading warning level")
+			return nil, fmt.Errorf("error reading warning level: %w", err)
 		}
 
 		synWarnings[i] = NewSyntaxWarning(
@@ -218,13 +217,13 @@ func loadSynWarnings(buff *buffer) ([]*SyntaxWarning, error) {
 func loadEmbeddedStr(buff *buffer) ([]byte, error) {
 	length, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading embedded string length")
+		return nil, fmt.Errorf("error reading embedded string length: %w", err)
 	}
 
 	strBytes := make([]byte, length)
 	_, err = buff.read(strBytes)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading embedded string")
+		return nil, fmt.Errorf("error reading embedded string: %w", err)
 	}
 
 	return strBytes, nil
@@ -233,19 +232,19 @@ func loadEmbeddedStr(buff *buffer) ([]byte, error) {
 func loadStr(buff *buffer, src []byte) ([]byte, error) {
 	b, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading string type")
+		return nil, fmt.Errorf("error reading string type: %w", err)
 	}
 
 	switch b {
 	case 1:
 		start, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading string start")
+			return nil, fmt.Errorf("error reading string start: %w", err)
 		}
 
 		length, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading string length")
+			return nil, fmt.Errorf("error reading string length: %w", err)
 		}
 
 		bytes := make([]byte, length)
@@ -254,19 +253,19 @@ func loadStr(buff *buffer, src []byte) ([]byte, error) {
 	case 2:
 		strBytes, err := loadEmbeddedStr(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading embedded string")
+			return nil, fmt.Errorf("error reading embedded string: %w", err)
 		}
 
 		return strBytes, nil
 	default:
-		return nil, eris.Wrapf(err, "invalid string type: %d", b)
+		return nil, fmt.Errorf("invalid string type: %d: %w", b, err)
 	}
 }
 
 func loadOptionalNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	nextByte, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading optional node")
+		return nil, fmt.Errorf("error reading optional node: %w", err)
 	}
 
 	if nextByte == 0 {
@@ -276,7 +275,7 @@ func loadOptionalNode(buff *buffer, src []byte, pool *constantPool) (Node, error
 	buff.setPosition(buff.position() - 1)
 	node, err := loadNode(buff, src, pool)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading node")
+		return nil, fmt.Errorf("error reading node: %w", err)
 	}
 
 	return node, nil
@@ -285,21 +284,21 @@ func loadOptionalNode(buff *buffer, src []byte, pool *constantPool) (Node, error
 func loadInteger(buff *buffer) (*big.Int, error) {
 	negative, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading integer sign")
+		return nil, fmt.Errorf("error reading integer sign: %w", err)
 	}
 
 	length, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading integer words length")
+		return nil, fmt.Errorf("error reading integer words length: %w", err)
 	}
 
 	if length == 0 {
-		return nil, eris.Wrapf(err, "invalid integer words length: %d", length)
+		return nil, fmt.Errorf("invalid integer words length: %d: %w", length, err)
 	}
 
 	firstWord, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading integer first word")
+		return nil, fmt.Errorf("error reading integer first word: %w", err)
 	}
 
 	if length == 1 {
@@ -314,7 +313,7 @@ func loadInteger(buff *buffer) (*big.Int, error) {
 	for index := 1; index < int(length); index++ {
 		word, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading word")
+			return nil, fmt.Errorf("error reading word: %w", err)
 		}
 
 		temp := big.NewInt(int64(word))
@@ -334,12 +333,12 @@ func loadInteger(buff *buffer) (*big.Int, error) {
 func loadConstant(buff *buffer, pool *constantPool) (string, error) {
 	idx, err := loadVarUInt(buff)
 	if err != nil {
-		return "", eris.Wrap(err, "error reading constant index")
+		return "", fmt.Errorf("error reading constant index: %w", err)
 	}
 
 	constant, err := pool.Get(buff, idx)
 	if err != nil {
-		return "", eris.Wrap(err, "error getting constant")
+		return "", fmt.Errorf("error getting constant: %w", err)
 	}
 
 	return constant, nil
@@ -348,7 +347,7 @@ func loadConstant(buff *buffer, pool *constantPool) (string, error) {
 func loadOptionalConstant(buff *buffer, pool *constantPool) (*string, error) {
 	nextByte, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading optional node")
+		return nil, fmt.Errorf("error reading optional node: %w", err)
 	}
 
 	if nextByte == 0 {
@@ -358,7 +357,7 @@ func loadOptionalConstant(buff *buffer, pool *constantPool) (*string, error) {
 	buff.setPosition(buff.position() - 1)
 	constant, err := loadConstant(buff, pool)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading node")
+		return nil, fmt.Errorf("error reading node: %w", err)
 	}
 
 	return &constant, nil
@@ -367,14 +366,14 @@ func loadOptionalConstant(buff *buffer, pool *constantPool) (*string, error) {
 func loadConstants(buff *buffer, pool *constantPool) ([]string, error) {
 	count, err := loadVarUInt(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading constants count")
+		return nil, fmt.Errorf("error reading constants count: %w", err)
 	}
 
 	constants := make([]string, count)
 	for i := range count {
 		constants[i], err = loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading constant")
+			return nil, fmt.Errorf("error reading constant: %w", err)
 		}
 	}
 
@@ -384,11 +383,11 @@ func loadConstants(buff *buffer, pool *constantPool) ([]string, error) {
 func loadFlags(buff *buffer) (int16, error) {
 	flags, err := loadVarUInt(buff)
 	if err != nil {
-		return 0, eris.Wrap(err, "error reading flags")
+		return 0, fmt.Errorf("error reading flags: %w", err)
 	}
 
 	if flags > 0x7FFF {
-		return 0, eris.Wrapf(err, "invalid flags: %d", flags)
+		return 0, fmt.Errorf("invalid flags: %d: %w", flags, err)
 	}
 
 	return int16(flags), nil
