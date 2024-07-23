@@ -4,123 +4,121 @@ package parser
 
 import (
 	"fmt"
-
-	"github.com/rotisserie/eris"
 )
 
 func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	nodeType, err := buff.readByte()
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading node type")
+		return nil, fmt.Errorf("error reading node type: %w", err)
 	}
 
 	nodeLoc, err := loadLocation(buff)
 	if err != nil {
-		return nil, eris.Wrap(err, "error reading node location")
+		return nil, fmt.Errorf("error reading node location: %w", err)
 	}
 
 	switch nodeType {
 	case 1:
 		newName_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param newName")
+			return nil, fmt.Errorf("error reading param newName: %w", err)
 		}
 
 		newName := newName_
 
 		oldName_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param oldName")
+			return nil, fmt.Errorf("error reading param oldName: %w", err)
 		}
 
 		oldName := oldName_
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewAliasGlobalVariableNode(newName, oldName, keywordLoc, nodeLoc), nil
 	case 2:
 		newName_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param newName")
+			return nil, fmt.Errorf("error reading param newName: %w", err)
 		}
 
 		newName := newName_
 
 		oldName_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param oldName")
+			return nil, fmt.Errorf("error reading param oldName: %w", err)
 		}
 
 		oldName := oldName_
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewAliasMethodNode(newName, oldName, keywordLoc, nodeLoc), nil
 	case 3:
 		left_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		right_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewAlternationPatternNode(left, right, operatorLoc, nodeLoc), nil
 	case 4:
 		left_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		right_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewAndNode(left, right, operatorLoc, nodeLoc), nil
 	case 5:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ArgumentsNodeFlags(flags_)
 
 		argumentsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param argumentsCount")
+			return nil, fmt.Errorf("error reading param argumentsCount: %w", err)
 		}
 
 		arguments := make([]Node, argumentsCount)
 		for i := range argumentsCount {
 			arguments[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param arguments")
+				return nil, fmt.Errorf("error reading param arguments: %w", err)
 			}
 		}
 
@@ -128,355 +126,355 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 6:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ArrayNodeFlags(flags_)
 
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elementsCount")
+			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
 		}
 
 		elements := make([]Node, elementsCount)
 		for i := range elementsCount {
 			elements[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param elements")
+				return nil, fmt.Errorf("error reading param elements: %w", err)
 			}
 		}
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewArrayNode(flags, elements, openingLoc, closingLoc, nodeLoc), nil
 	case 7:
 		constant_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param constant")
+			return nil, fmt.Errorf("error reading param constant: %w", err)
 		}
 
 		constant := constant_
 
 		requiredsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param requiredsCount")
+			return nil, fmt.Errorf("error reading param requiredsCount: %w", err)
 		}
 
 		requireds := make([]Node, requiredsCount)
 		for i := range requiredsCount {
 			requireds[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param requireds")
+				return nil, fmt.Errorf("error reading param requireds: %w", err)
 			}
 		}
 
 		rest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rest")
+			return nil, fmt.Errorf("error reading param rest: %w", err)
 		}
 
 		rest := rest_
 
 		postsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param postsCount")
+			return nil, fmt.Errorf("error reading param postsCount: %w", err)
 		}
 
 		posts := make([]Node, postsCount)
 		for i := range postsCount {
 			posts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param posts")
+				return nil, fmt.Errorf("error reading param posts: %w", err)
 			}
 		}
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewArrayPatternNode(constant, requireds, rest, posts, openingLoc, closingLoc, nodeLoc), nil
 	case 8:
 		key_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param key")
+			return nil, fmt.Errorf("error reading param key: %w", err)
 		}
 
 		key := key_
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewAssocNode(key, value, operatorLoc, nodeLoc), nil
 	case 9:
 		value_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewAssocSplatNode(value, operatorLoc, nodeLoc), nil
 	case 10:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewBackReferenceReadNode(name, nodeLoc), nil
 	case 11:
 		beginKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param beginKeywordLoc")
+			return nil, fmt.Errorf("error reading param beginKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		rescueClause_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rescueClause")
+			return nil, fmt.Errorf("error reading param rescueClause: %w", err)
 		}
 
 		rescueClause, ok := rescueClause_.(*RescueNode)
 		if !ok && rescueClause_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param rescueClause: expected RescueNode, got %T", rescueClause_))
+			return nil, fmt.Errorf("error reading param rescueClause: expected RescueNode, got %T: %w", rescueClause_, err)
 		}
 
 		elseClause_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elseClause")
+			return nil, fmt.Errorf("error reading param elseClause: %w", err)
 		}
 
 		elseClause, ok := elseClause_.(*ElseNode)
 		if !ok && elseClause_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param elseClause: expected ElseNode, got %T", elseClause_))
+			return nil, fmt.Errorf("error reading param elseClause: expected ElseNode, got %T: %w", elseClause_, err)
 		}
 
 		ensureClause_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param ensureClause")
+			return nil, fmt.Errorf("error reading param ensureClause: %w", err)
 		}
 
 		ensureClause, ok := ensureClause_.(*EnsureNode)
 		if !ok && ensureClause_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param ensureClause: expected EnsureNode, got %T", ensureClause_))
+			return nil, fmt.Errorf("error reading param ensureClause: expected EnsureNode, got %T: %w", ensureClause_, err)
 		}
 
 		endKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewBeginNode(beginKeywordLoc, statements, rescueClause, elseClause, ensureClause, endKeywordLoc, nodeLoc), nil
 	case 12:
 		expression_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param expression")
+			return nil, fmt.Errorf("error reading param expression: %w", err)
 		}
 
 		expression := expression_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewBlockArgumentNode(expression, operatorLoc, nodeLoc), nil
 	case 13:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewBlockLocalVariableNode(flags, name, nodeLoc), nil
 	case 14:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		parameters_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parameters")
+			return nil, fmt.Errorf("error reading param parameters: %w", err)
 		}
 
 		parameters := parameters_
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewBlockNode(locals, parameters, body, openingLoc, closingLoc, nodeLoc), nil
 	case 15:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewBlockParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
 	case 16:
 		parameters_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parameters")
+			return nil, fmt.Errorf("error reading param parameters: %w", err)
 		}
 
 		parameters, ok := parameters_.(*ParametersNode)
 		if !ok && parameters_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param parameters: expected ParametersNode, got %T", parameters_))
+			return nil, fmt.Errorf("error reading param parameters: expected ParametersNode, got %T: %w", parameters_, err)
 		}
 
 		localsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param localsCount")
+			return nil, fmt.Errorf("error reading param localsCount: %w", err)
 		}
 
 		locals := make([]Node, localsCount)
 		for i := range localsCount {
 			locals[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param locals")
+				return nil, fmt.Errorf("error reading param locals: %w", err)
 			}
 		}
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewBlockParametersNode(parameters, locals, openingLoc, closingLoc, nodeLoc), nil
 	case 17:
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewBreakNode(arguments, keywordLoc, nodeLoc), nil
 	case 18:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		messageLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param messageLoc")
+			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
 		readName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param readName")
+			return nil, fmt.Errorf("error reading param readName: %w", err)
 		}
 
 		writeName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param writeName")
+			return nil, fmt.Errorf("error reading param writeName: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -485,55 +483,55 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 19:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		messageLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param messageLoc")
+			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
@@ -542,50 +540,50 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 20:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		messageLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param messageLoc")
+			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
 		readName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param readName")
+			return nil, fmt.Errorf("error reading param readName: %w", err)
 		}
 
 		writeName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param writeName")
+			return nil, fmt.Errorf("error reading param writeName: %w", err)
 		}
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -594,45 +592,45 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 21:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		messageLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param messageLoc")
+			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
 		readName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param readName")
+			return nil, fmt.Errorf("error reading param readName: %w", err)
 		}
 
 		writeName, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param writeName")
+			return nil, fmt.Errorf("error reading param writeName: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -641,205 +639,205 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 22:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		messageLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param messageLoc")
+			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
 		return NewCallTargetNode(flags, receiver, callOperatorLoc, name, messageLoc, nodeLoc), nil
 	case 23:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param target")
+			return nil, fmt.Errorf("error reading param target: %w", err)
 		}
 
 		target := target_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewCapturePatternNode(value, target, operatorLoc, nodeLoc), nil
 	case 24:
 		predicate_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		conditionsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param conditionsCount")
+			return nil, fmt.Errorf("error reading param conditionsCount: %w", err)
 		}
 
 		conditions := make([]Node, conditionsCount)
 		for i := range conditionsCount {
 			conditions[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param conditions")
+				return nil, fmt.Errorf("error reading param conditions: %w", err)
 			}
 		}
 
 		consequent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param consequent")
+			return nil, fmt.Errorf("error reading param consequent: %w", err)
 		}
 
 		consequent, ok := consequent_.(*ElseNode)
 		if !ok && consequent_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param consequent: expected ElseNode, got %T", consequent_))
+			return nil, fmt.Errorf("error reading param consequent: expected ElseNode, got %T: %w", consequent_, err)
 		}
 
 		caseKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param caseKeywordLoc")
+			return nil, fmt.Errorf("error reading param caseKeywordLoc: %w", err)
 		}
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewCaseMatchNode(predicate, conditions, consequent, caseKeywordLoc, endKeywordLoc, nodeLoc), nil
 	case 25:
 		predicate_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		conditionsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param conditionsCount")
+			return nil, fmt.Errorf("error reading param conditionsCount: %w", err)
 		}
 
 		conditions := make([]Node, conditionsCount)
 		for i := range conditionsCount {
 			conditions[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param conditions")
+				return nil, fmt.Errorf("error reading param conditions: %w", err)
 			}
 		}
 
 		consequent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param consequent")
+			return nil, fmt.Errorf("error reading param consequent: %w", err)
 		}
 
 		consequent, ok := consequent_.(*ElseNode)
 		if !ok && consequent_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param consequent: expected ElseNode, got %T", consequent_))
+			return nil, fmt.Errorf("error reading param consequent: expected ElseNode, got %T: %w", consequent_, err)
 		}
 
 		caseKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param caseKeywordLoc")
+			return nil, fmt.Errorf("error reading param caseKeywordLoc: %w", err)
 		}
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewCaseNode(predicate, conditions, consequent, caseKeywordLoc, endKeywordLoc, nodeLoc), nil
 	case 26:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		classKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param classKeywordLoc")
+			return nil, fmt.Errorf("error reading param classKeywordLoc: %w", err)
 		}
 
 		constantPath_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param constantPath")
+			return nil, fmt.Errorf("error reading param constantPath: %w", err)
 		}
 
 		constantPath := constantPath_
 
 		inheritanceOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param inheritanceOperatorLoc")
+			return nil, fmt.Errorf("error reading param inheritanceOperatorLoc: %w", err)
 		}
 
 		superclass_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param superclass")
+			return nil, fmt.Errorf("error reading param superclass: %w", err)
 		}
 
 		superclass := superclass_
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewClassNode(locals, classKeywordLoc, constantPath, inheritanceOperatorLoc, superclass, body, endKeywordLoc, name, nodeLoc), nil
 	case 27:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -848,51 +846,51 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 28:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		return NewClassVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
 	case 29:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -901,60 +899,60 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 30:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewClassVariableReadNode(name, nodeLoc), nil
 	case 31:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewClassVariableTargetNode(name, nodeLoc), nil
 	case 32:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewClassVariableWriteNode(name, nameLoc, value, operatorLoc, nodeLoc), nil
 	case 33:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -963,51 +961,51 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 34:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		return NewConstantOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
 	case 35:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1016,22 +1014,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 36:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param target")
+			return nil, fmt.Errorf("error reading param target: %w", err)
 		}
 
 		target, ok := target_.(*ConstantPathNode)
 		if !ok && target_ != nil {
-			return nil, eris.Wrapf(err, "error reading param target: expected ConstantPathNode, got %T", target_)
+			return nil, fmt.Errorf("error reading param target: expected ConstantPathNode, got %T: %w", target_, err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1040,72 +1038,72 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 37:
 		parent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parent")
+			return nil, fmt.Errorf("error reading param parent: %w", err)
 		}
 
 		parent := parent_
 
 		child_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param child")
+			return nil, fmt.Errorf("error reading param child: %w", err)
 		}
 
 		child := child_
 
 		delimiterLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param delimiterLoc")
+			return nil, fmt.Errorf("error reading param delimiterLoc: %w", err)
 		}
 
 		return NewConstantPathNode(parent, child, delimiterLoc, nodeLoc), nil
 	case 38:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param target")
+			return nil, fmt.Errorf("error reading param target: %w", err)
 		}
 
 		target, ok := target_.(*ConstantPathNode)
 		if !ok && target_ != nil {
-			return nil, eris.Wrapf(err, "error reading param target: expected ConstantPathNode, got %T", target_)
+			return nil, fmt.Errorf("error reading param target: expected ConstantPathNode, got %T: %w", target_, err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		return NewConstantPathOperatorWriteNode(target, operatorLoc, value, operator, nodeLoc), nil
 	case 39:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param target")
+			return nil, fmt.Errorf("error reading param target: %w", err)
 		}
 
 		target, ok := target_.(*ConstantPathNode)
 		if !ok && target_ != nil {
-			return nil, eris.Wrapf(err, "error reading param target: expected ConstantPathNode, got %T", target_)
+			return nil, fmt.Errorf("error reading param target: expected ConstantPathNode, got %T: %w", target_, err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1114,43 +1112,43 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 40:
 		parent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parent")
+			return nil, fmt.Errorf("error reading param parent: %w", err)
 		}
 
 		parent := parent_
 
 		child_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param child")
+			return nil, fmt.Errorf("error reading param child: %w", err)
 		}
 
 		child := child_
 
 		delimiterLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param delimiterLoc")
+			return nil, fmt.Errorf("error reading param delimiterLoc: %w", err)
 		}
 
 		return NewConstantPathTargetNode(parent, child, delimiterLoc, nodeLoc), nil
 	case 41:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param target")
+			return nil, fmt.Errorf("error reading param target: %w", err)
 		}
 
 		target, ok := target_.(*ConstantPathNode)
 		if !ok && target_ != nil {
-			return nil, eris.Wrapf(err, "error reading param target: expected ConstantPathNode, got %T", target_)
+			return nil, fmt.Errorf("error reading param target: expected ConstantPathNode, got %T: %w", target_, err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1159,38 +1157,38 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 42:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewConstantReadNode(name, nodeLoc), nil
 	case 43:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewConstantTargetNode(name, nodeLoc), nil
 	case 44:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewConstantWriteNode(name, nameLoc, value, operatorLoc, nodeLoc), nil
@@ -1199,151 +1197,151 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		parameters_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parameters")
+			return nil, fmt.Errorf("error reading param parameters: %w", err)
 		}
 
 		parameters, ok := parameters_.(*ParametersNode)
 		if !ok && parameters_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param parameters: expected ParametersNode, got %T", parameters_))
+			return nil, fmt.Errorf("error reading param parameters: expected ParametersNode, got %T: %w", parameters_, err)
 		}
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		defKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param defKeywordLoc")
+			return nil, fmt.Errorf("error reading param defKeywordLoc: %w", err)
 		}
 
 		operatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		equalLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param equalLoc")
+			return nil, fmt.Errorf("error reading param equalLoc: %w", err)
 		}
 
 		endKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewDefNode(name, nameLoc, receiver, parameters, body, locals, defKeywordLoc, operatorLoc, lparenLoc, rparenLoc, equalLoc, endKeywordLoc, nodeLoc), nil
 	case 46:
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewDefinedNode(lparenLoc, value, rparenLoc, keywordLoc, nodeLoc), nil
 	case 47:
 		elseKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elseKeywordLoc")
+			return nil, fmt.Errorf("error reading param elseKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		endKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewElseNode(elseKeywordLoc, statements, endKeywordLoc, nodeLoc), nil
 	case 48:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewEmbeddedStatementsNode(openingLoc, statements, closingLoc, nodeLoc), nil
 	case 49:
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		variable_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param variable")
+			return nil, fmt.Errorf("error reading param variable: %w", err)
 		}
 
 		variable := variable_
@@ -1352,22 +1350,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 50:
 		ensureKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param ensureKeywordLoc")
+			return nil, fmt.Errorf("error reading param ensureKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewEnsureNode(ensureKeywordLoc, statements, endKeywordLoc, nodeLoc), nil
@@ -1376,73 +1374,73 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 52:
 		constant_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param constant")
+			return nil, fmt.Errorf("error reading param constant: %w", err)
 		}
 
 		constant := constant_
 
 		left_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		requiredsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param requiredsCount")
+			return nil, fmt.Errorf("error reading param requiredsCount: %w", err)
 		}
 
 		requireds := make([]Node, requiredsCount)
 		for i := range requiredsCount {
 			requireds[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param requireds")
+				return nil, fmt.Errorf("error reading param requireds: %w", err)
 			}
 		}
 
 		right_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewFindPatternNode(constant, left, requireds, right, openingLoc, closingLoc, nodeLoc), nil
 	case 53:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RangeFlags(flags_)
 
 		left_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		right_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewFlipFlopNode(flags, left, right, operatorLoc, nodeLoc), nil
@@ -1453,46 +1451,46 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 55:
 		index_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param index")
+			return nil, fmt.Errorf("error reading param index: %w", err)
 		}
 
 		index := index_
 
 		collection_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param collection")
+			return nil, fmt.Errorf("error reading param collection: %w", err)
 		}
 
 		collection := collection_
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		forKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param forKeywordLoc")
+			return nil, fmt.Errorf("error reading param forKeywordLoc: %w", err)
 		}
 
 		inKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param inKeywordLoc")
+			return nil, fmt.Errorf("error reading param inKeywordLoc: %w", err)
 		}
 
 		doKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param doKeywordLoc")
+			return nil, fmt.Errorf("error reading param doKeywordLoc: %w", err)
 		}
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewForNode(index, collection, statements, forKeywordLoc, inKeywordLoc, doKeywordLoc, endKeywordLoc, nodeLoc), nil
@@ -1503,34 +1501,34 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 58:
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block, ok := block_.(*BlockNode)
 		if !ok && block_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param block: expected BlockNode, got %T", block_))
+			return nil, fmt.Errorf("error reading param block: expected BlockNode, got %T: %w", block_, err)
 		}
 
 		return NewForwardingSuperNode(block, nodeLoc), nil
 	case 59:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1539,51 +1537,51 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 60:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		return NewGlobalVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
 	case 61:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1592,150 +1590,150 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 62:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewGlobalVariableReadNode(name, nodeLoc), nil
 	case 63:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewGlobalVariableTargetNode(name, nodeLoc), nil
 	case 64:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewGlobalVariableWriteNode(name, nameLoc, value, operatorLoc, nodeLoc), nil
 	case 65:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elementsCount")
+			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
 		}
 
 		elements := make([]Node, elementsCount)
 		for i := range elementsCount {
 			elements[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param elements")
+				return nil, fmt.Errorf("error reading param elements: %w", err)
 			}
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewHashNode(openingLoc, elements, closingLoc, nodeLoc), nil
 	case 66:
 		constant_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param constant")
+			return nil, fmt.Errorf("error reading param constant: %w", err)
 		}
 
 		constant := constant_
 
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elementsCount")
+			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
 		}
 
 		elements := make([]Node, elementsCount)
 		for i := range elementsCount {
 			elements[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param elements")
+				return nil, fmt.Errorf("error reading param elements: %w", err)
 			}
 		}
 
 		rest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rest")
+			return nil, fmt.Errorf("error reading param rest: %w", err)
 		}
 
 		rest := rest_
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewHashPatternNode(constant, elements, rest, openingLoc, closingLoc, nodeLoc), nil
 	case 67:
 		ifKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param ifKeywordLoc")
+			return nil, fmt.Errorf("error reading param ifKeywordLoc: %w", err)
 		}
 
 		predicate_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		thenKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param thenKeywordLoc")
+			return nil, fmt.Errorf("error reading param thenKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		consequent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param consequent")
+			return nil, fmt.Errorf("error reading param consequent: %w", err)
 		}
 
 		consequent := consequent_
 
 		endKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewIfNode(ifKeywordLoc, predicate, thenKeywordLoc, statements, consequent, endKeywordLoc, nodeLoc), nil
 	case 68:
 		numeric_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param numeric")
+			return nil, fmt.Errorf("error reading param numeric: %w", err)
 		}
 
 		numeric := numeric_
@@ -1744,7 +1742,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 69:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1755,86 +1753,86 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 71:
 		pattern_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param pattern")
+			return nil, fmt.Errorf("error reading param pattern: %w", err)
 		}
 
 		pattern := pattern_
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		inLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param inLoc")
+			return nil, fmt.Errorf("error reading param inLoc: %w", err)
 		}
 
 		thenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param thenLoc")
+			return nil, fmt.Errorf("error reading param thenLoc: %w", err)
 		}
 
 		return NewInNode(pattern, statements, inLoc, thenLoc, nodeLoc), nil
 	case 72:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1843,62 +1841,62 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 73:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1907,57 +1905,57 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 74:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		callOperatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param callOperatorLoc")
+			return nil, fmt.Errorf("error reading param callOperatorLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -1966,40 +1964,40 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 75:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := CallNodeFlags(flags_)
 
 		receiver_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param receiver")
+			return nil, fmt.Errorf("error reading param receiver: %w", err)
 		}
 
 		receiver := receiver_
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
@@ -2008,22 +2006,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 76:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -2032,51 +2030,51 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 77:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		return NewInstanceVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
 	case 78:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -2085,188 +2083,188 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 79:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewInstanceVariableReadNode(name, nodeLoc), nil
 	case 80:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewInstanceVariableTargetNode(name, nodeLoc), nil
 	case 81:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewInstanceVariableWriteNode(name, nameLoc, value, operatorLoc, nodeLoc), nil
 	case 82:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := IntegerBaseFlags(flags_)
 
 		value, err := loadInteger(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		return NewIntegerNode(flags, value, nodeLoc), nil
 	case 83:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RegularExpressionFlags(flags_)
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		partsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param partsCount")
+			return nil, fmt.Errorf("error reading param partsCount: %w", err)
 		}
 
 		parts := make([]Node, partsCount)
 		for i := range partsCount {
 			parts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param parts")
+				return nil, fmt.Errorf("error reading param parts: %w", err)
 			}
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewInterpolatedMatchLastLineNode(flags, openingLoc, parts, closingLoc, nodeLoc), nil
 	case 84:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RegularExpressionFlags(flags_)
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		partsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param partsCount")
+			return nil, fmt.Errorf("error reading param partsCount: %w", err)
 		}
 
 		parts := make([]Node, partsCount)
 		for i := range partsCount {
 			parts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param parts")
+				return nil, fmt.Errorf("error reading param parts: %w", err)
 			}
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewInterpolatedRegularExpressionNode(flags, openingLoc, parts, closingLoc, nodeLoc), nil
 	case 85:
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		partsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param partsCount")
+			return nil, fmt.Errorf("error reading param partsCount: %w", err)
 		}
 
 		parts := make([]Node, partsCount)
 		for i := range partsCount {
 			parts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param parts")
+				return nil, fmt.Errorf("error reading param parts: %w", err)
 			}
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewInterpolatedStringNode(openingLoc, parts, closingLoc, nodeLoc), nil
 	case 86:
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		partsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param partsCount")
+			return nil, fmt.Errorf("error reading param partsCount: %w", err)
 		}
 
 		parts := make([]Node, partsCount)
 		for i := range partsCount {
 			parts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param parts")
+				return nil, fmt.Errorf("error reading param parts: %w", err)
 			}
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewInterpolatedSymbolNode(openingLoc, parts, closingLoc, nodeLoc), nil
 	case 87:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		partsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param partsCount")
+			return nil, fmt.Errorf("error reading param partsCount: %w", err)
 		}
 
 		parts := make([]Node, partsCount)
 		for i := range partsCount {
 			parts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param parts")
+				return nil, fmt.Errorf("error reading param parts: %w", err)
 			}
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewInterpolatedXStringNode(openingLoc, parts, closingLoc, nodeLoc), nil
@@ -2275,20 +2273,20 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 89:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := KeywordHashNodeFlags(flags_)
 
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param elementsCount")
+			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
 		}
 
 		elements := make([]Node, elementsCount)
 		for i := range elementsCount {
 			elements[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param elements")
+				return nil, fmt.Errorf("error reading param elements: %w", err)
 			}
 		}
 
@@ -2296,57 +2294,57 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 90:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewKeywordRestParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
 	case 91:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		parameters_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param parameters")
+			return nil, fmt.Errorf("error reading param parameters: %w", err)
 		}
 
 		parameters := parameters_
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
@@ -2355,173 +2353,173 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 92:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		return NewLocalVariableAndWriteNode(nameLoc, operatorLoc, value, name, depth, nodeLoc), nil
 	case 93:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		operator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operator")
+			return nil, fmt.Errorf("error reading param operator: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		return NewLocalVariableOperatorWriteNode(nameLoc, operatorLoc, value, name, operator, depth, nodeLoc), nil
 	case 94:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		return NewLocalVariableOrWriteNode(nameLoc, operatorLoc, value, name, depth, nodeLoc), nil
 	case 95:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		return NewLocalVariableReadNode(name, depth, nodeLoc), nil
 	case 96:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		return NewLocalVariableTargetNode(name, depth, nodeLoc), nil
 	case 97:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param depth")
+			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewLocalVariableWriteNode(name, depth, nameLoc, value, operatorLoc, nodeLoc), nil
 	case 98:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RegularExpressionFlags(flags_)
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		contentLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param contentLoc")
+			return nil, fmt.Errorf("error reading param contentLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		unescaped_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param unescaped")
+			return nil, fmt.Errorf("error reading param unescaped: %w", err)
 		}
 		unescaped := string(unescaped_)
 
@@ -2529,66 +2527,66 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 99:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		pattern_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param pattern")
+			return nil, fmt.Errorf("error reading param pattern: %w", err)
 		}
 
 		pattern := pattern_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewMatchPredicateNode(value, pattern, operatorLoc, nodeLoc), nil
 	case 100:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
 
 		pattern_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param pattern")
+			return nil, fmt.Errorf("error reading param pattern: %w", err)
 		}
 
 		pattern := pattern_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewMatchRequiredNode(value, pattern, operatorLoc, nodeLoc), nil
 	case 101:
 		call_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param call")
+			return nil, fmt.Errorf("error reading param call: %w", err)
 		}
 
 		call, ok := call_.(*CallNode)
 		if !ok && call_ != nil {
-			return nil, eris.Wrapf(err, "error reading param call: expected CallNode, got %T", call_)
+			return nil, fmt.Errorf("error reading param call: expected CallNode, got %T: %w", call_, err)
 		}
 
 		targetsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param targetsCount")
+			return nil, fmt.Errorf("error reading param targetsCount: %w", err)
 		}
 
 		targets := make([]Node, targetsCount)
 		for i := range targetsCount {
 			targets[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param targets")
+				return nil, fmt.Errorf("error reading param targets: %w", err)
 			}
 		}
 
@@ -2598,136 +2596,136 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 103:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		moduleKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param moduleKeywordLoc")
+			return nil, fmt.Errorf("error reading param moduleKeywordLoc: %w", err)
 		}
 
 		constantPath_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param constantPath")
+			return nil, fmt.Errorf("error reading param constantPath: %w", err)
 		}
 
 		constantPath := constantPath_
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewModuleNode(locals, moduleKeywordLoc, constantPath, body, endKeywordLoc, name, nodeLoc), nil
 	case 104:
 		leftsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param leftsCount")
+			return nil, fmt.Errorf("error reading param leftsCount: %w", err)
 		}
 
 		lefts := make([]Node, leftsCount)
 		for i := range leftsCount {
 			lefts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param lefts")
+				return nil, fmt.Errorf("error reading param lefts: %w", err)
 			}
 		}
 
 		rest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rest")
+			return nil, fmt.Errorf("error reading param rest: %w", err)
 		}
 
 		rest := rest_
 
 		rightsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rightsCount")
+			return nil, fmt.Errorf("error reading param rightsCount: %w", err)
 		}
 
 		rights := make([]Node, rightsCount)
 		for i := range rightsCount {
 			rights[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param rights")
+				return nil, fmt.Errorf("error reading param rights: %w", err)
 			}
 		}
 
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		return NewMultiTargetNode(lefts, rest, rights, lparenLoc, rparenLoc, nodeLoc), nil
 	case 105:
 		leftsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param leftsCount")
+			return nil, fmt.Errorf("error reading param leftsCount: %w", err)
 		}
 
 		lefts := make([]Node, leftsCount)
 		for i := range leftsCount {
 			lefts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param lefts")
+				return nil, fmt.Errorf("error reading param lefts: %w", err)
 			}
 		}
 
 		rest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rest")
+			return nil, fmt.Errorf("error reading param rest: %w", err)
 		}
 
 		rest := rest_
 
 		rightsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rightsCount")
+			return nil, fmt.Errorf("error reading param rightsCount: %w", err)
 		}
 
 		rights := make([]Node, rightsCount)
 		for i := range rightsCount {
 			rights[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param rights")
+				return nil, fmt.Errorf("error reading param rights: %w", err)
 			}
 		}
 
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -2736,17 +2734,17 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 106:
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewNextNode(arguments, keywordLoc, nodeLoc), nil
@@ -2755,49 +2753,49 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 108:
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewNoKeywordsParameterNode(operatorLoc, keywordLoc, nodeLoc), nil
 	case 109:
 		maximum, err := buff.readByte()
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param maximum")
+			return nil, fmt.Errorf("error reading param maximum: %w", err)
 		}
 
 		return NewNumberedParametersNode(maximum, nodeLoc), nil
 	case 110:
 		number, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param number")
+			return nil, fmt.Errorf("error reading param number: %w", err)
 		}
 
 		return NewNumberedReferenceReadNode(number, nodeLoc), nil
 	case 111:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -2806,28 +2804,28 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 112:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param value")
+			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
 		value := value_
@@ -2836,261 +2834,261 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 113:
 		left_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		right_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewOrNode(left, right, operatorLoc, nodeLoc), nil
 	case 114:
 		requiredsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param requiredsCount")
+			return nil, fmt.Errorf("error reading param requiredsCount: %w", err)
 		}
 
 		requireds := make([]Node, requiredsCount)
 		for i := range requiredsCount {
 			requireds[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param requireds")
+				return nil, fmt.Errorf("error reading param requireds: %w", err)
 			}
 		}
 
 		optionalsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param optionalsCount")
+			return nil, fmt.Errorf("error reading param optionalsCount: %w", err)
 		}
 
 		optionals := make([]Node, optionalsCount)
 		for i := range optionalsCount {
 			optionals[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param optionals")
+				return nil, fmt.Errorf("error reading param optionals: %w", err)
 			}
 		}
 
 		rest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rest")
+			return nil, fmt.Errorf("error reading param rest: %w", err)
 		}
 
 		rest := rest_
 
 		postsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param postsCount")
+			return nil, fmt.Errorf("error reading param postsCount: %w", err)
 		}
 
 		posts := make([]Node, postsCount)
 		for i := range postsCount {
 			posts[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param posts")
+				return nil, fmt.Errorf("error reading param posts: %w", err)
 			}
 		}
 
 		keywordsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordsCount")
+			return nil, fmt.Errorf("error reading param keywordsCount: %w", err)
 		}
 
 		keywords := make([]Node, keywordsCount)
 		for i := range keywordsCount {
 			keywords[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param keywords")
+				return nil, fmt.Errorf("error reading param keywords: %w", err)
 			}
 		}
 
 		keywordRest_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordRest")
+			return nil, fmt.Errorf("error reading param keywordRest: %w", err)
 		}
 
 		keywordRest := keywordRest_
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block, ok := block_.(*BlockParameterNode)
 		if !ok && block_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param block: expected BlockParameterNode, got %T", block_))
+			return nil, fmt.Errorf("error reading param block: expected BlockParameterNode, got %T: %w", block_, err)
 		}
 
 		return NewParametersNode(requireds, optionals, rest, posts, keywords, keywordRest, block, nodeLoc), nil
 	case 115:
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewParenthesesNode(body, openingLoc, closingLoc, nodeLoc), nil
 	case 116:
 		expression_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param expression")
+			return nil, fmt.Errorf("error reading param expression: %w", err)
 		}
 
 		expression := expression_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		lparenLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		rparenLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		return NewPinnedExpressionNode(expression, operatorLoc, lparenLoc, rparenLoc, nodeLoc), nil
 	case 117:
 		variable_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param variable")
+			return nil, fmt.Errorf("error reading param variable: %w", err)
 		}
 
 		variable := variable_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewPinnedVariableNode(variable, operatorLoc, nodeLoc), nil
 	case 118:
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewPostExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
 	case 119:
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		return NewPreExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
 	case 120:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		statements_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrapf(err, "error reading param statements: expected StatementsNode, got %T", statements_)
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		return NewProgramNode(locals, statements, nodeLoc), nil
 	case 121:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RangeFlags(flags_)
 
 		left_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param left")
+			return nil, fmt.Errorf("error reading param left: %w", err)
 		}
 
 		left := left_
 
 		right_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param right")
+			return nil, fmt.Errorf("error reading param right: %w", err)
 		}
 
 		right := right_
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewRangeNode(flags, left, right, operatorLoc, nodeLoc), nil
 	case 122:
 		numeric_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param numeric")
+			return nil, fmt.Errorf("error reading param numeric: %w", err)
 		}
 
 		numeric := numeric_
@@ -3101,28 +3099,28 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 124:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := RegularExpressionFlags(flags_)
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		contentLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param contentLoc")
+			return nil, fmt.Errorf("error reading param contentLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		unescaped_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param unescaped")
+			return nil, fmt.Errorf("error reading param unescaped: %w", err)
 		}
 		unescaped := string(unescaped_)
 
@@ -3130,50 +3128,50 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 125:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		return NewRequiredKeywordParameterNode(flags, name, nameLoc, nodeLoc), nil
 	case 126:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		return NewRequiredParameterNode(flags, name, nodeLoc), nil
 	case 127:
 		expression_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param expression")
+			return nil, fmt.Errorf("error reading param expression: %w", err)
 		}
 
 		expression := expression_
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		rescueExpression_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rescueExpression")
+			return nil, fmt.Errorf("error reading param rescueExpression: %w", err)
 		}
 
 		rescueExpression := rescueExpression_
@@ -3182,75 +3180,75 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 128:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		exceptionsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param exceptionsCount")
+			return nil, fmt.Errorf("error reading param exceptionsCount: %w", err)
 		}
 
 		exceptions := make([]Node, exceptionsCount)
 		for i := range exceptionsCount {
 			exceptions[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param exceptions")
+				return nil, fmt.Errorf("error reading param exceptions: %w", err)
 			}
 		}
 
 		operatorLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		reference_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param reference")
+			return nil, fmt.Errorf("error reading param reference: %w", err)
 		}
 
 		reference := reference_
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		consequent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param consequent")
+			return nil, fmt.Errorf("error reading param consequent: %w", err)
 		}
 
 		consequent, ok := consequent_.(*RescueNode)
 		if !ok && consequent_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param consequent: expected RescueNode, got %T", consequent_))
+			return nil, fmt.Errorf("error reading param consequent: expected RescueNode, got %T: %w", consequent_, err)
 		}
 
 		return NewRescueNode(keywordLoc, exceptions, operatorLoc, reference, statements, consequent, nodeLoc), nil
 	case 129:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := ParameterFlags(flags_)
 
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param name")
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
 		nameLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param nameLoc")
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		return NewRestParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
@@ -3259,17 +3257,17 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 131:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		return NewReturnNode(keywordLoc, arguments, nodeLoc), nil
@@ -3278,36 +3276,36 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 133:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param locals")
+			return nil, fmt.Errorf("error reading param locals: %w", err)
 		}
 
 		classKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param classKeywordLoc")
+			return nil, fmt.Errorf("error reading param classKeywordLoc: %w", err)
 		}
 
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		expression_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param expression")
+			return nil, fmt.Errorf("error reading param expression: %w", err)
 		}
 
 		expression := expression_
 
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param body")
+			return nil, fmt.Errorf("error reading param body: %w", err)
 		}
 
 		body := body_
 
 		endKeywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewSingletonClassNode(locals, classKeywordLoc, operatorLoc, expression, body, endKeywordLoc, nodeLoc), nil
@@ -3316,7 +3314,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 135:
 		filepath_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param filepath")
+			return nil, fmt.Errorf("error reading param filepath: %w", err)
 		}
 		filepath := string(filepath_)
 
@@ -3326,12 +3324,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 137:
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param operatorLoc")
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
 		expression_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param expression")
+			return nil, fmt.Errorf("error reading param expression: %w", err)
 		}
 
 		expression := expression_
@@ -3340,14 +3338,14 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 138:
 		bodyCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param bodyCount")
+			return nil, fmt.Errorf("error reading param bodyCount: %w", err)
 		}
 
 		body := make([]Node, bodyCount)
 		for i := range bodyCount {
 			body[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param body")
+				return nil, fmt.Errorf("error reading param body: %w", err)
 			}
 		}
 
@@ -3355,28 +3353,28 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 139:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := StringFlags(flags_)
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		contentLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param contentLoc")
+			return nil, fmt.Errorf("error reading param contentLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		unescaped_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param unescaped")
+			return nil, fmt.Errorf("error reading param unescaped: %w", err)
 		}
 		unescaped := string(unescaped_)
 
@@ -3384,32 +3382,32 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 140:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		block_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param block")
+			return nil, fmt.Errorf("error reading param block: %w", err)
 		}
 
 		block := block_
@@ -3418,28 +3416,28 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 141:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := SymbolFlags(flags_)
 
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		valueLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param valueLoc")
+			return nil, fmt.Errorf("error reading param valueLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		unescaped_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param unescaped")
+			return nil, fmt.Errorf("error reading param unescaped: %w", err)
 		}
 		unescaped := string(unescaped_)
 
@@ -3449,197 +3447,197 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 143:
 		namesCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param namesCount")
+			return nil, fmt.Errorf("error reading param namesCount: %w", err)
 		}
 
 		names := make([]Node, namesCount)
 		for i := range namesCount {
 			names[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param names")
+				return nil, fmt.Errorf("error reading param names: %w", err)
 			}
 		}
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		return NewUndefNode(names, keywordLoc, nodeLoc), nil
 	case 144:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		predicate_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		thenKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param thenKeywordLoc")
+			return nil, fmt.Errorf("error reading param thenKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		consequent_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param consequent")
+			return nil, fmt.Errorf("error reading param consequent: %w", err)
 		}
 
 		consequent, ok := consequent_.(*ElseNode)
 		if !ok && consequent_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param consequent: expected ElseNode, got %T", consequent_))
+			return nil, fmt.Errorf("error reading param consequent: expected ElseNode, got %T: %w", consequent_, err)
 		}
 
 		endKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param endKeywordLoc")
+			return nil, fmt.Errorf("error reading param endKeywordLoc: %w", err)
 		}
 
 		return NewUnlessNode(keywordLoc, predicate, thenKeywordLoc, statements, consequent, endKeywordLoc, nodeLoc), nil
 	case 145:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := LoopFlags(flags_)
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		predicate_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		return NewUntilNode(flags, keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
 	case 146:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		conditionsCount, err := loadVarUInt(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param conditionsCount")
+			return nil, fmt.Errorf("error reading param conditionsCount: %w", err)
 		}
 
 		conditions := make([]Node, conditionsCount)
 		for i := range conditionsCount {
 			conditions[i], err = loadNode(buff, src, pool)
 			if err != nil {
-				return nil, eris.Wrap(err, "error reading param conditions")
+				return nil, fmt.Errorf("error reading param conditions: %w", err)
 			}
 		}
 
 		thenKeywordLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param thenKeywordLoc")
+			return nil, fmt.Errorf("error reading param thenKeywordLoc: %w", err)
 		}
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		return NewWhenNode(keywordLoc, conditions, thenKeywordLoc, statements, nodeLoc), nil
 	case 147:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := LoopFlags(flags_)
 
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		closingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		predicate_, err := loadNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param predicate")
+			return nil, fmt.Errorf("error reading param predicate: %w", err)
 		}
 
 		predicate := predicate_
 
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param statements")
+			return nil, fmt.Errorf("error reading param statements: %w", err)
 		}
 
 		statements, ok := statements_.(*StatementsNode)
 		if !ok && statements_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param statements: expected StatementsNode, got %T", statements_))
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
 		return NewWhileNode(flags, keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
 	case 148:
 		flags_, err := loadFlags(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param flags")
+			return nil, fmt.Errorf("error reading param flags: %w", err)
 		}
 		flags := EncodingFlags(flags_)
 
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param openingLoc")
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
 		}
 
 		contentLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param contentLoc")
+			return nil, fmt.Errorf("error reading param contentLoc: %w", err)
 		}
 
 		closingLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param closingLoc")
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
 		unescaped_, err := loadStr(buff, src)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param unescaped")
+			return nil, fmt.Errorf("error reading param unescaped: %w", err)
 		}
 		unescaped := string(unescaped_)
 
@@ -3647,31 +3645,31 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 	case 149:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param keywordLoc")
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
 		}
 
 		lparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param lparenLoc")
+			return nil, fmt.Errorf("error reading param lparenLoc: %w", err)
 		}
 
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param arguments")
+			return nil, fmt.Errorf("error reading param arguments: %w", err)
 		}
 
 		arguments, ok := arguments_.(*ArgumentsNode)
 		if !ok && arguments_ != nil {
-			return nil, eris.Wrap(err, fmt.Sprintf("error reading param arguments: expected ArgumentsNode, got %T", arguments_))
+			return nil, fmt.Errorf("error reading param arguments: expected ArgumentsNode, got %T: %w", arguments_, err)
 		}
 
 		rparenLoc, err := loadOptionalLocation(buff)
 		if err != nil {
-			return nil, eris.Wrap(err, "error reading param rparenLoc")
+			return nil, fmt.Errorf("error reading param rparenLoc: %w", err)
 		}
 
 		return NewYieldNode(keywordLoc, lparenLoc, arguments, rparenLoc, nodeLoc), nil
 	default:
-		return nil, eris.Errorf("unknown node type: %d", nodeType)
+		return nil, fmt.Errorf("unknown node type: %d", nodeType)
 	}
 }

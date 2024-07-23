@@ -2,8 +2,7 @@ package parser
 
 import (
 	"encoding/binary"
-
-	"github.com/rotisserie/eris"
+	"fmt"
 )
 
 type constantPool struct {
@@ -39,7 +38,7 @@ func (cp *constantPool) Get(buff *buffer, oneBasedIndex uint32) (string, error) 
 			buff.setPosition(int(start & 0x7FFFFFFF))
 			_, err := buff.read(bytes)
 			if err != nil {
-				return "", eris.Wrapf(err, "error reading bytes")
+				return "", fmt.Errorf("error reading bytes: %w", err)
 			}
 			buff.setPosition(position)
 		}
