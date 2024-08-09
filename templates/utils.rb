@@ -21,7 +21,6 @@ def gotype(field)
   when Prism::Template::ConstantListField then "[]string"
   when Prism::Template::LocationField then "*Location"
   when Prism::Template::OptionalLocationField then "*Location"
-  when Prism::Template::FlagsField then field.options[:kind]
   when Prism::Template::DoubleField then "float64"
   when Prism::Template::UInt8Field then "uint8"
   when Prism::Template::UInt32Field then "uint32"

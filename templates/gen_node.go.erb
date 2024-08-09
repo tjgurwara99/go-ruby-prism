@@ -22,11 +22,7 @@ type Node interface {
 // <%= line %>
 <% end %>type <%= node.name %> struct {
   <%- node.fields.each do |field| -%>
-  <%- if field.is_a?(Prism::Template::FlagsField) -%>
-  Flags <%= gotype(field) %>;
-  <%- else -%>
   <%= prop(field) %> <%= gotype(field) %>;
-  <%- end -%>
   <%- end -%>
   Loc *Location;
 }
@@ -43,16 +39,6 @@ func New<%= node.name %>(<%= (node.fields.map { |field| "#{arg(field)} #{gotype(
 func (node *<%= node.name %>) Accept(visitor NodeVisitor) {
   visitor.Visit(node)
 }
-
-<%- if (flags_field = node.fields.find { |field| field.is_a?(Prism::Template::FlagsField) }) -%>
-<%- flag = flags.find { |flag| flag.name == flags_field.kind }.tap { |flag| raise "Expected to find #{field.kind}" unless flag } -%>
-<%- flag.values.each do |value| -%>
-func (node *<%= node.name %>) Is<%= value.camelcase %>() bool {
-  return (node.Flags & <%= const_prefix(flag.name) %>_<%= value.name %>) != 0;
-}
-
-<%- end -%>
-<%- end -%>
 
 func (node *<%= node.name %>) Children() []Node {
   children := make([]Node, 0)

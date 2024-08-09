@@ -214,14 +214,12 @@ func (node *AndNode) Location() *Location {
 //	return foo, bar, baz
 //	       ^^^^^^^^^^^^^
 type ArgumentsNode struct {
-	Flags     ArgumentsNodeFlags
 	Arguments []Node
 	Loc       *Location
 }
 
-func NewArgumentsNode(flags ArgumentsNodeFlags, arguments []Node, loc *Location) *ArgumentsNode {
+func NewArgumentsNode(arguments []Node, loc *Location) *ArgumentsNode {
 	return &ArgumentsNode{
-		Flags:     flags,
 		Arguments: arguments,
 		Loc:       loc,
 	}
@@ -229,10 +227,6 @@ func NewArgumentsNode(flags ArgumentsNodeFlags, arguments []Node, loc *Location)
 
 func (node *ArgumentsNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *ArgumentsNode) IsContainsKeywordSplat() bool {
-	return (node.Flags & ARGUMENTS_NODE_CONTAINS_KEYWORD_SPLAT) != 0
 }
 
 func (node *ArgumentsNode) Children() []Node {
@@ -246,7 +240,6 @@ func (node *ArgumentsNode) Children() []Node {
 func (node *ArgumentsNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":  "ArgumentsNode",
-		"flags":     node.Flags,
 		"arguments": node.Arguments,
 		"loc":       node.Loc,
 	})
@@ -261,16 +254,14 @@ func (node *ArgumentsNode) Location() *Location {
 //	[1, 2, 3]
 //	^^^^^^^^^
 type ArrayNode struct {
-	Flags      ArrayNodeFlags
 	Elements   []Node
 	Openingloc *Location
 	Closingloc *Location
 	Loc        *Location
 }
 
-func NewArrayNode(flags ArrayNodeFlags, elements []Node, openingLoc *Location, closingLoc *Location, loc *Location) *ArrayNode {
+func NewArrayNode(elements []Node, openingLoc *Location, closingLoc *Location, loc *Location) *ArrayNode {
 	return &ArrayNode{
-		Flags:      flags,
 		Elements:   elements,
 		Openingloc: openingLoc,
 		Closingloc: closingLoc,
@@ -280,10 +271,6 @@ func NewArrayNode(flags ArrayNodeFlags, elements []Node, openingLoc *Location, c
 
 func (node *ArrayNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *ArrayNode) IsContainsSplat() bool {
-	return (node.Flags & ARRAY_NODE_CONTAINS_SPLAT) != 0
 }
 
 func (node *ArrayNode) Children() []Node {
@@ -297,7 +284,6 @@ func (node *ArrayNode) Children() []Node {
 func (node *ArrayNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "ArrayNode",
-		"flags":      node.Flags,
 		"elements":   node.Elements,
 		"openingLoc": node.Openingloc,
 		"closingLoc": node.Closingloc,
@@ -638,25 +624,19 @@ func (node *BlockArgumentNode) Location() *Location {
 //	a { |; b| }
 //	       ^
 type BlockLocalVariableNode struct {
-	Flags ParameterFlags
-	Name  string
-	Loc   *Location
+	Name string
+	Loc  *Location
 }
 
-func NewBlockLocalVariableNode(flags ParameterFlags, name string, loc *Location) *BlockLocalVariableNode {
+func NewBlockLocalVariableNode(name string, loc *Location) *BlockLocalVariableNode {
 	return &BlockLocalVariableNode{
-		Flags: flags,
-		Name:  name,
-		Loc:   loc,
+		Name: name,
+		Loc:  loc,
 	}
 }
 
 func (node *BlockLocalVariableNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *BlockLocalVariableNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
 }
 
 func (node *BlockLocalVariableNode) Children() []Node {
@@ -668,7 +648,6 @@ func (node *BlockLocalVariableNode) Children() []Node {
 func (node *BlockLocalVariableNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "BlockLocalVariableNode",
-		"flags":    node.Flags,
 		"name":     node.Name,
 		"loc":      node.Loc,
 	})
@@ -742,16 +721,14 @@ func (node *BlockNode) Location() *Location {
 //	      ^^
 //	end
 type BlockParameterNode struct {
-	Flags       ParameterFlags
 	Name        *string
 	Nameloc     *Location
 	Operatorloc *Location
 	Loc         *Location
 }
 
-func NewBlockParameterNode(flags ParameterFlags, name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *BlockParameterNode {
+func NewBlockParameterNode(name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *BlockParameterNode {
 	return &BlockParameterNode{
-		Flags:       flags,
 		Name:        name,
 		Nameloc:     nameLoc,
 		Operatorloc: operatorLoc,
@@ -763,10 +740,6 @@ func (node *BlockParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *BlockParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
-}
-
 func (node *BlockParameterNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -776,7 +749,6 @@ func (node *BlockParameterNode) Children() []Node {
 func (node *BlockParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "BlockParameterNode",
-		"flags":       node.Flags,
 		"name":        node.Name,
 		"nameLoc":     node.Nameloc,
 		"operatorLoc": node.Operatorloc,
@@ -895,7 +867,6 @@ func (node *BreakNode) Location() *Location {
 //	foo.bar &&= value
 //	^^^^^^^^^^^^^^^^^
 type CallAndWriteNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Messageloc      *Location
@@ -906,9 +877,8 @@ type CallAndWriteNode struct {
 	Loc             *Location
 }
 
-func NewCallAndWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, operatorLoc *Location, value Node, loc *Location) *CallAndWriteNode {
+func NewCallAndWriteNode(receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, operatorLoc *Location, value Node, loc *Location) *CallAndWriteNode {
 	return &CallAndWriteNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Messageloc:      messageLoc,
@@ -922,22 +892,6 @@ func NewCallAndWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Lo
 
 func (node *CallAndWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *CallAndWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *CallAndWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *CallAndWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *CallAndWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *CallAndWriteNode) Children() []Node {
@@ -955,7 +909,6 @@ func (node *CallAndWriteNode) Children() []Node {
 func (node *CallAndWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "CallAndWriteNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"messageLoc":      node.Messageloc,
@@ -991,7 +944,6 @@ func (node *CallAndWriteNode) Location() *Location {
 //	foo&.bar
 //	^^^^^^^^
 type CallNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Name            string
@@ -1003,9 +955,8 @@ type CallNode struct {
 	Loc             *Location
 }
 
-func NewCallNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, name string, messageLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, loc *Location) *CallNode {
+func NewCallNode(receiver Node, callOperatorLoc *Location, name string, messageLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, loc *Location) *CallNode {
 	return &CallNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Name:            name,
@@ -1020,22 +971,6 @@ func NewCallNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, 
 
 func (node *CallNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *CallNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *CallNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *CallNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *CallNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *CallNode) Children() []Node {
@@ -1059,7 +994,6 @@ func (node *CallNode) Children() []Node {
 func (node *CallNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "CallNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"name":            node.Name,
@@ -1081,51 +1015,33 @@ func (node *CallNode) Location() *Location {
 //	foo.bar += baz
 //	^^^^^^^^^^^^^^
 type CallOperatorWriteNode struct {
-	Flags           CallNodeFlags
-	Receiver        Node
-	Calloperatorloc *Location
-	Messageloc      *Location
-	Readname        string
-	Writename       string
-	Operator        string
-	Operatorloc     *Location
-	Value           Node
-	Loc             *Location
+	Receiver          Node
+	Calloperatorloc   *Location
+	Messageloc        *Location
+	Readname          string
+	Writename         string
+	Binaryoperator    string
+	Binaryoperatorloc *Location
+	Value             Node
+	Loc               *Location
 }
 
-func NewCallOperatorWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, operator string, operatorLoc *Location, value Node, loc *Location) *CallOperatorWriteNode {
+func NewCallOperatorWriteNode(receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, binaryOperator string, binaryOperatorLoc *Location, value Node, loc *Location) *CallOperatorWriteNode {
 	return &CallOperatorWriteNode{
-		Flags:           flags,
-		Receiver:        receiver,
-		Calloperatorloc: callOperatorLoc,
-		Messageloc:      messageLoc,
-		Readname:        readName,
-		Writename:       writeName,
-		Operator:        operator,
-		Operatorloc:     operatorLoc,
-		Value:           value,
-		Loc:             loc,
+		Receiver:          receiver,
+		Calloperatorloc:   callOperatorLoc,
+		Messageloc:        messageLoc,
+		Readname:          readName,
+		Writename:         writeName,
+		Binaryoperator:    binaryOperator,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Loc:               loc,
 	}
 }
 
 func (node *CallOperatorWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *CallOperatorWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *CallOperatorWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *CallOperatorWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *CallOperatorWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *CallOperatorWriteNode) Children() []Node {
@@ -1142,17 +1058,16 @@ func (node *CallOperatorWriteNode) Children() []Node {
 
 func (node *CallOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":        "CallOperatorWriteNode",
-		"flags":           node.Flags,
-		"receiver":        node.Receiver,
-		"callOperatorLoc": node.Calloperatorloc,
-		"messageLoc":      node.Messageloc,
-		"readName":        node.Readname,
-		"writeName":       node.Writename,
-		"operator":        node.Operator,
-		"operatorLoc":     node.Operatorloc,
-		"value":           node.Value,
-		"loc":             node.Loc,
+		"nodeName":          "CallOperatorWriteNode",
+		"receiver":          node.Receiver,
+		"callOperatorLoc":   node.Calloperatorloc,
+		"messageLoc":        node.Messageloc,
+		"readName":          node.Readname,
+		"writeName":         node.Writename,
+		"binaryOperator":    node.Binaryoperator,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"loc":               node.Loc,
 	})
 }
 
@@ -1165,7 +1080,6 @@ func (node *CallOperatorWriteNode) Location() *Location {
 //	foo.bar ||= value
 //	^^^^^^^^^^^^^^^^^
 type CallOrWriteNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Messageloc      *Location
@@ -1176,9 +1090,8 @@ type CallOrWriteNode struct {
 	Loc             *Location
 }
 
-func NewCallOrWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, operatorLoc *Location, value Node, loc *Location) *CallOrWriteNode {
+func NewCallOrWriteNode(receiver Node, callOperatorLoc *Location, messageLoc *Location, readName string, writeName string, operatorLoc *Location, value Node, loc *Location) *CallOrWriteNode {
 	return &CallOrWriteNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Messageloc:      messageLoc,
@@ -1192,22 +1105,6 @@ func NewCallOrWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Loc
 
 func (node *CallOrWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *CallOrWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *CallOrWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *CallOrWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *CallOrWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *CallOrWriteNode) Children() []Node {
@@ -1225,7 +1122,6 @@ func (node *CallOrWriteNode) Children() []Node {
 func (node *CallOrWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "CallOrWriteNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"messageLoc":      node.Messageloc,
@@ -1254,7 +1150,6 @@ func (node *CallOrWriteNode) Location() *Location {
 //	for foo.bar in baz do end
 //	    ^^^^^^^
 type CallTargetNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Name            string
@@ -1262,9 +1157,8 @@ type CallTargetNode struct {
 	Loc             *Location
 }
 
-func NewCallTargetNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, name string, messageLoc *Location, loc *Location) *CallTargetNode {
+func NewCallTargetNode(receiver Node, callOperatorLoc *Location, name string, messageLoc *Location, loc *Location) *CallTargetNode {
 	return &CallTargetNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Name:            name,
@@ -1275,22 +1169,6 @@ func NewCallTargetNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Loca
 
 func (node *CallTargetNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *CallTargetNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *CallTargetNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *CallTargetNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *CallTargetNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *CallTargetNode) Children() []Node {
@@ -1304,7 +1182,6 @@ func (node *CallTargetNode) Children() []Node {
 func (node *CallTargetNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "CallTargetNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"name":            node.Name,
@@ -1612,22 +1489,22 @@ func (node *ClassVariableAndWriteNode) Location() *Location {
 //	@@target += value
 //	^^^^^^^^^^^^^^^^^
 type ClassVariableOperatorWriteNode struct {
-	Name        string
-	Nameloc     *Location
-	Operatorloc *Location
-	Value       Node
-	Operator    string
-	Loc         *Location
+	Name              string
+	Nameloc           *Location
+	Binaryoperatorloc *Location
+	Value             Node
+	Binaryoperator    string
+	Loc               *Location
 }
 
-func NewClassVariableOperatorWriteNode(name string, nameLoc *Location, operatorLoc *Location, value Node, operator string, loc *Location) *ClassVariableOperatorWriteNode {
+func NewClassVariableOperatorWriteNode(name string, nameLoc *Location, binaryOperatorLoc *Location, value Node, binaryOperator string, loc *Location) *ClassVariableOperatorWriteNode {
 	return &ClassVariableOperatorWriteNode{
-		Name:        name,
-		Nameloc:     nameLoc,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Operator:    operator,
-		Loc:         loc,
+		Name:              name,
+		Nameloc:           nameLoc,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Binaryoperator:    binaryOperator,
+		Loc:               loc,
 	}
 }
 
@@ -1645,13 +1522,13 @@ func (node *ClassVariableOperatorWriteNode) Children() []Node {
 
 func (node *ClassVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "ClassVariableOperatorWriteNode",
-		"name":        node.Name,
-		"nameLoc":     node.Nameloc,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"operator":    node.Operator,
-		"loc":         node.Loc,
+		"nodeName":          "ClassVariableOperatorWriteNode",
+		"name":              node.Name,
+		"nameLoc":           node.Nameloc,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"binaryOperator":    node.Binaryoperator,
+		"loc":               node.Loc,
 	})
 }
 
@@ -1887,22 +1764,22 @@ func (node *ConstantAndWriteNode) Location() *Location {
 //	Target += value
 //	^^^^^^^^^^^^^^^
 type ConstantOperatorWriteNode struct {
-	Name        string
-	Nameloc     *Location
-	Operatorloc *Location
-	Value       Node
-	Operator    string
-	Loc         *Location
+	Name              string
+	Nameloc           *Location
+	Binaryoperatorloc *Location
+	Value             Node
+	Binaryoperator    string
+	Loc               *Location
 }
 
-func NewConstantOperatorWriteNode(name string, nameLoc *Location, operatorLoc *Location, value Node, operator string, loc *Location) *ConstantOperatorWriteNode {
+func NewConstantOperatorWriteNode(name string, nameLoc *Location, binaryOperatorLoc *Location, value Node, binaryOperator string, loc *Location) *ConstantOperatorWriteNode {
 	return &ConstantOperatorWriteNode{
-		Name:        name,
-		Nameloc:     nameLoc,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Operator:    operator,
-		Loc:         loc,
+		Name:              name,
+		Nameloc:           nameLoc,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Binaryoperator:    binaryOperator,
+		Loc:               loc,
 	}
 }
 
@@ -1920,13 +1797,13 @@ func (node *ConstantOperatorWriteNode) Children() []Node {
 
 func (node *ConstantOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "ConstantOperatorWriteNode",
-		"name":        node.Name,
-		"nameLoc":     node.Nameloc,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"operator":    node.Operator,
-		"loc":         node.Loc,
+		"nodeName":          "ConstantOperatorWriteNode",
+		"name":              node.Name,
+		"nameLoc":           node.Nameloc,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"binaryOperator":    node.Binaryoperator,
+		"loc":               node.Loc,
 	})
 }
 
@@ -2037,16 +1914,18 @@ func (node *ConstantPathAndWriteNode) Location() *Location {
 //	^^^^^^^^
 type ConstantPathNode struct {
 	Parent       Node
-	Child        Node
+	Name         *string
 	Delimiterloc *Location
+	Nameloc      *Location
 	Loc          *Location
 }
 
-func NewConstantPathNode(parent Node, child Node, delimiterLoc *Location, loc *Location) *ConstantPathNode {
+func NewConstantPathNode(parent Node, name *string, delimiterLoc *Location, nameLoc *Location, loc *Location) *ConstantPathNode {
 	return &ConstantPathNode{
 		Parent:       parent,
-		Child:        child,
+		Name:         name,
 		Delimiterloc: delimiterLoc,
+		Nameloc:      nameLoc,
 		Loc:          loc,
 	}
 }
@@ -2062,8 +1941,6 @@ func (node *ConstantPathNode) Children() []Node {
 		children = append(children, node.Parent)
 	}
 
-	children = append(children, node.Child)
-
 	return children
 }
 
@@ -2071,8 +1948,9 @@ func (node *ConstantPathNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":     "ConstantPathNode",
 		"parent":       node.Parent,
-		"child":        node.Child,
+		"name":         node.Name,
 		"delimiterLoc": node.Delimiterloc,
+		"nameLoc":      node.Nameloc,
 		"loc":          node.Loc,
 	})
 }
@@ -2086,20 +1964,20 @@ func (node *ConstantPathNode) Location() *Location {
 //	Parent::Child += value
 //	^^^^^^^^^^^^^^^^^^^^^^
 type ConstantPathOperatorWriteNode struct {
-	Target      *ConstantPathNode
-	Operatorloc *Location
-	Value       Node
-	Operator    string
-	Loc         *Location
+	Target            *ConstantPathNode
+	Binaryoperatorloc *Location
+	Value             Node
+	Binaryoperator    string
+	Loc               *Location
 }
 
-func NewConstantPathOperatorWriteNode(target *ConstantPathNode, operatorLoc *Location, value Node, operator string, loc *Location) *ConstantPathOperatorWriteNode {
+func NewConstantPathOperatorWriteNode(target *ConstantPathNode, binaryOperatorLoc *Location, value Node, binaryOperator string, loc *Location) *ConstantPathOperatorWriteNode {
 	return &ConstantPathOperatorWriteNode{
-		Target:      target,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Operator:    operator,
-		Loc:         loc,
+		Target:            target,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Binaryoperator:    binaryOperator,
+		Loc:               loc,
 	}
 }
 
@@ -2119,12 +1997,12 @@ func (node *ConstantPathOperatorWriteNode) Children() []Node {
 
 func (node *ConstantPathOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "ConstantPathOperatorWriteNode",
-		"target":      node.Target,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"operator":    node.Operator,
-		"loc":         node.Loc,
+		"nodeName":          "ConstantPathOperatorWriteNode",
+		"target":            node.Target,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"binaryOperator":    node.Binaryoperator,
+		"loc":               node.Loc,
 	})
 }
 
@@ -2186,16 +2064,18 @@ func (node *ConstantPathOrWriteNode) Location() *Location {
 //	^^^^^^^^  ^^^^^^^^
 type ConstantPathTargetNode struct {
 	Parent       Node
-	Child        Node
+	Name         *string
 	Delimiterloc *Location
+	Nameloc      *Location
 	Loc          *Location
 }
 
-func NewConstantPathTargetNode(parent Node, child Node, delimiterLoc *Location, loc *Location) *ConstantPathTargetNode {
+func NewConstantPathTargetNode(parent Node, name *string, delimiterLoc *Location, nameLoc *Location, loc *Location) *ConstantPathTargetNode {
 	return &ConstantPathTargetNode{
 		Parent:       parent,
-		Child:        child,
+		Name:         name,
 		Delimiterloc: delimiterLoc,
+		Nameloc:      nameLoc,
 		Loc:          loc,
 	}
 }
@@ -2211,8 +2091,6 @@ func (node *ConstantPathTargetNode) Children() []Node {
 		children = append(children, node.Parent)
 	}
 
-	children = append(children, node.Child)
-
 	return children
 }
 
@@ -2220,8 +2098,9 @@ func (node *ConstantPathTargetNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":     "ConstantPathTargetNode",
 		"parent":       node.Parent,
-		"child":        node.Child,
+		"name":         node.Name,
 		"delimiterLoc": node.Delimiterloc,
+		"nameLoc":      node.Nameloc,
 		"loc":          node.Loc,
 	})
 }
@@ -2842,16 +2721,14 @@ func (node *FindPatternNode) Location() *Location {
 //	baz if foo .. bar
 //	       ^^^^^^^^^^
 type FlipFlopNode struct {
-	Flags       RangeFlags
 	Left        Node
 	Right       Node
 	Operatorloc *Location
 	Loc         *Location
 }
 
-func NewFlipFlopNode(flags RangeFlags, left Node, right Node, operatorLoc *Location, loc *Location) *FlipFlopNode {
+func NewFlipFlopNode(left Node, right Node, operatorLoc *Location, loc *Location) *FlipFlopNode {
 	return &FlipFlopNode{
-		Flags:       flags,
 		Left:        left,
 		Right:       right,
 		Operatorloc: operatorLoc,
@@ -2861,10 +2738,6 @@ func NewFlipFlopNode(flags RangeFlags, left Node, right Node, operatorLoc *Locat
 
 func (node *FlipFlopNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *FlipFlopNode) IsExcludeEnd() bool {
-	return (node.Flags & RANGE_EXCLUDE_END) != 0
 }
 
 func (node *FlipFlopNode) Children() []Node {
@@ -2884,7 +2757,6 @@ func (node *FlipFlopNode) Children() []Node {
 func (node *FlipFlopNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "FlipFlopNode",
-		"flags":       node.Flags,
 		"left":        node.Left,
 		"right":       node.Right,
 		"operatorLoc": node.Operatorloc,
@@ -3167,22 +3039,22 @@ func (node *GlobalVariableAndWriteNode) Location() *Location {
 //	$target += value
 //	^^^^^^^^^^^^^^^^
 type GlobalVariableOperatorWriteNode struct {
-	Name        string
-	Nameloc     *Location
-	Operatorloc *Location
-	Value       Node
-	Operator    string
-	Loc         *Location
+	Name              string
+	Nameloc           *Location
+	Binaryoperatorloc *Location
+	Value             Node
+	Binaryoperator    string
+	Loc               *Location
 }
 
-func NewGlobalVariableOperatorWriteNode(name string, nameLoc *Location, operatorLoc *Location, value Node, operator string, loc *Location) *GlobalVariableOperatorWriteNode {
+func NewGlobalVariableOperatorWriteNode(name string, nameLoc *Location, binaryOperatorLoc *Location, value Node, binaryOperator string, loc *Location) *GlobalVariableOperatorWriteNode {
 	return &GlobalVariableOperatorWriteNode{
-		Name:        name,
-		Nameloc:     nameLoc,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Operator:    operator,
-		Loc:         loc,
+		Name:              name,
+		Nameloc:           nameLoc,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Binaryoperator:    binaryOperator,
+		Loc:               loc,
 	}
 }
 
@@ -3200,13 +3072,13 @@ func (node *GlobalVariableOperatorWriteNode) Children() []Node {
 
 func (node *GlobalVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "GlobalVariableOperatorWriteNode",
-		"name":        node.Name,
-		"nameLoc":     node.Nameloc,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"operator":    node.Operator,
-		"loc":         node.Loc,
+		"nodeName":          "GlobalVariableOperatorWriteNode",
+		"name":              node.Name,
+		"nameLoc":           node.Nameloc,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"binaryOperator":    node.Binaryoperator,
+		"loc":               node.Loc,
 	})
 }
 
@@ -3497,13 +3369,16 @@ func (node *HashPatternNode) Location() *Location {
 	return node.Loc
 }
 
-// Represents the use of the `if` keyword, either in the block form or the modifier form.
+// Represents the use of the `if` keyword, either in the block form or the modifier form, or a ternary expression.
 //
 //	bar if foo
 //	^^^^^^^^^^
 //
 //	if foo then bar end
 //	^^^^^^^^^^^^^^^^^^^
+//
+//	foo ? bar : baz
+//	^^^^^^^^^^^^^^^
 type IfNode struct {
 	Ifkeywordloc   *Location
 	Predicate      Node
@@ -3751,7 +3626,6 @@ func (node *InNode) Location() *Location {
 //	foo.bar[baz] &&= value
 //	^^^^^^^^^^^^^^^^^^^^^^
 type IndexAndWriteNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Openingloc      *Location
@@ -3763,9 +3637,8 @@ type IndexAndWriteNode struct {
 	Loc             *Location
 }
 
-func NewIndexAndWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, operatorLoc *Location, value Node, loc *Location) *IndexAndWriteNode {
+func NewIndexAndWriteNode(receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, operatorLoc *Location, value Node, loc *Location) *IndexAndWriteNode {
 	return &IndexAndWriteNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Openingloc:      openingLoc,
@@ -3780,22 +3653,6 @@ func NewIndexAndWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *L
 
 func (node *IndexAndWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *IndexAndWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *IndexAndWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *IndexAndWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *IndexAndWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *IndexAndWriteNode) Children() []Node {
@@ -3821,7 +3678,6 @@ func (node *IndexAndWriteNode) Children() []Node {
 func (node *IndexAndWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "IndexAndWriteNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"openingLoc":      node.Openingloc,
@@ -3843,53 +3699,35 @@ func (node *IndexAndWriteNode) Location() *Location {
 //	foo.bar[baz] += value
 //	^^^^^^^^^^^^^^^^^^^^^
 type IndexOperatorWriteNode struct {
-	Flags           CallNodeFlags
-	Receiver        Node
-	Calloperatorloc *Location
-	Openingloc      *Location
-	Arguments       *ArgumentsNode
-	Closingloc      *Location
-	Block           Node
-	Operator        string
-	Operatorloc     *Location
-	Value           Node
-	Loc             *Location
+	Receiver          Node
+	Calloperatorloc   *Location
+	Openingloc        *Location
+	Arguments         *ArgumentsNode
+	Closingloc        *Location
+	Block             Node
+	Binaryoperator    string
+	Binaryoperatorloc *Location
+	Value             Node
+	Loc               *Location
 }
 
-func NewIndexOperatorWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, operator string, operatorLoc *Location, value Node, loc *Location) *IndexOperatorWriteNode {
+func NewIndexOperatorWriteNode(receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, binaryOperator string, binaryOperatorLoc *Location, value Node, loc *Location) *IndexOperatorWriteNode {
 	return &IndexOperatorWriteNode{
-		Flags:           flags,
-		Receiver:        receiver,
-		Calloperatorloc: callOperatorLoc,
-		Openingloc:      openingLoc,
-		Arguments:       arguments,
-		Closingloc:      closingLoc,
-		Block:           block,
-		Operator:        operator,
-		Operatorloc:     operatorLoc,
-		Value:           value,
-		Loc:             loc,
+		Receiver:          receiver,
+		Calloperatorloc:   callOperatorLoc,
+		Openingloc:        openingLoc,
+		Arguments:         arguments,
+		Closingloc:        closingLoc,
+		Block:             block,
+		Binaryoperator:    binaryOperator,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Loc:               loc,
 	}
 }
 
 func (node *IndexOperatorWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *IndexOperatorWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *IndexOperatorWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *IndexOperatorWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *IndexOperatorWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *IndexOperatorWriteNode) Children() []Node {
@@ -3914,18 +3752,17 @@ func (node *IndexOperatorWriteNode) Children() []Node {
 
 func (node *IndexOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":        "IndexOperatorWriteNode",
-		"flags":           node.Flags,
-		"receiver":        node.Receiver,
-		"callOperatorLoc": node.Calloperatorloc,
-		"openingLoc":      node.Openingloc,
-		"arguments":       node.Arguments,
-		"closingLoc":      node.Closingloc,
-		"block":           node.Block,
-		"operator":        node.Operator,
-		"operatorLoc":     node.Operatorloc,
-		"value":           node.Value,
-		"loc":             node.Loc,
+		"nodeName":          "IndexOperatorWriteNode",
+		"receiver":          node.Receiver,
+		"callOperatorLoc":   node.Calloperatorloc,
+		"openingLoc":        node.Openingloc,
+		"arguments":         node.Arguments,
+		"closingLoc":        node.Closingloc,
+		"block":             node.Block,
+		"binaryOperator":    node.Binaryoperator,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"loc":               node.Loc,
 	})
 }
 
@@ -3938,7 +3775,6 @@ func (node *IndexOperatorWriteNode) Location() *Location {
 //	foo.bar[baz] ||= value
 //	^^^^^^^^^^^^^^^^^^^^^^
 type IndexOrWriteNode struct {
-	Flags           CallNodeFlags
 	Receiver        Node
 	Calloperatorloc *Location
 	Openingloc      *Location
@@ -3950,9 +3786,8 @@ type IndexOrWriteNode struct {
 	Loc             *Location
 }
 
-func NewIndexOrWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, operatorLoc *Location, value Node, loc *Location) *IndexOrWriteNode {
+func NewIndexOrWriteNode(receiver Node, callOperatorLoc *Location, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, operatorLoc *Location, value Node, loc *Location) *IndexOrWriteNode {
 	return &IndexOrWriteNode{
-		Flags:           flags,
 		Receiver:        receiver,
 		Calloperatorloc: callOperatorLoc,
 		Openingloc:      openingLoc,
@@ -3967,22 +3802,6 @@ func NewIndexOrWriteNode(flags CallNodeFlags, receiver Node, callOperatorLoc *Lo
 
 func (node *IndexOrWriteNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *IndexOrWriteNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *IndexOrWriteNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *IndexOrWriteNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *IndexOrWriteNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *IndexOrWriteNode) Children() []Node {
@@ -4008,7 +3827,6 @@ func (node *IndexOrWriteNode) Children() []Node {
 func (node *IndexOrWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":        "IndexOrWriteNode",
-		"flags":           node.Flags,
 		"receiver":        node.Receiver,
 		"callOperatorLoc": node.Calloperatorloc,
 		"openingLoc":      node.Openingloc,
@@ -4038,7 +3856,6 @@ func (node *IndexOrWriteNode) Location() *Location {
 //	for foo[bar] in baz do end
 //	    ^^^^^^^^
 type IndexTargetNode struct {
-	Flags      CallNodeFlags
 	Receiver   Node
 	Openingloc *Location
 	Arguments  *ArgumentsNode
@@ -4047,9 +3864,8 @@ type IndexTargetNode struct {
 	Loc        *Location
 }
 
-func NewIndexTargetNode(flags CallNodeFlags, receiver Node, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, loc *Location) *IndexTargetNode {
+func NewIndexTargetNode(receiver Node, openingLoc *Location, arguments *ArgumentsNode, closingLoc *Location, block Node, loc *Location) *IndexTargetNode {
 	return &IndexTargetNode{
-		Flags:      flags,
 		Receiver:   receiver,
 		Openingloc: openingLoc,
 		Arguments:  arguments,
@@ -4061,22 +3877,6 @@ func NewIndexTargetNode(flags CallNodeFlags, receiver Node, openingLoc *Location
 
 func (node *IndexTargetNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *IndexTargetNode) IsSafeNavigation() bool {
-	return (node.Flags & CALL_NODE_SAFE_NAVIGATION) != 0
-}
-
-func (node *IndexTargetNode) IsVariableCall() bool {
-	return (node.Flags & CALL_NODE_VARIABLE_CALL) != 0
-}
-
-func (node *IndexTargetNode) IsAttributeWrite() bool {
-	return (node.Flags & CALL_NODE_ATTRIBUTE_WRITE) != 0
-}
-
-func (node *IndexTargetNode) IsIgnoreVisibility() bool {
-	return (node.Flags & CALL_NODE_IGNORE_VISIBILITY) != 0
 }
 
 func (node *IndexTargetNode) Children() []Node {
@@ -4098,7 +3898,6 @@ func (node *IndexTargetNode) Children() []Node {
 func (node *IndexTargetNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "IndexTargetNode",
-		"flags":      node.Flags,
 		"receiver":   node.Receiver,
 		"openingLoc": node.Openingloc,
 		"arguments":  node.Arguments,
@@ -4166,22 +3965,22 @@ func (node *InstanceVariableAndWriteNode) Location() *Location {
 //	@target += value
 //	^^^^^^^^^^^^^^^^
 type InstanceVariableOperatorWriteNode struct {
-	Name        string
-	Nameloc     *Location
-	Operatorloc *Location
-	Value       Node
-	Operator    string
-	Loc         *Location
+	Name              string
+	Nameloc           *Location
+	Binaryoperatorloc *Location
+	Value             Node
+	Binaryoperator    string
+	Loc               *Location
 }
 
-func NewInstanceVariableOperatorWriteNode(name string, nameLoc *Location, operatorLoc *Location, value Node, operator string, loc *Location) *InstanceVariableOperatorWriteNode {
+func NewInstanceVariableOperatorWriteNode(name string, nameLoc *Location, binaryOperatorLoc *Location, value Node, binaryOperator string, loc *Location) *InstanceVariableOperatorWriteNode {
 	return &InstanceVariableOperatorWriteNode{
-		Name:        name,
-		Nameloc:     nameLoc,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Operator:    operator,
-		Loc:         loc,
+		Name:              name,
+		Nameloc:           nameLoc,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Binaryoperator:    binaryOperator,
+		Loc:               loc,
 	}
 }
 
@@ -4199,13 +3998,13 @@ func (node *InstanceVariableOperatorWriteNode) Children() []Node {
 
 func (node *InstanceVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "InstanceVariableOperatorWriteNode",
-		"name":        node.Name,
-		"nameLoc":     node.Nameloc,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"operator":    node.Operator,
-		"loc":         node.Loc,
+		"nodeName":          "InstanceVariableOperatorWriteNode",
+		"name":              node.Name,
+		"nameLoc":           node.Nameloc,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"binaryOperator":    node.Binaryoperator,
+		"loc":               node.Loc,
 	})
 }
 
@@ -4392,14 +4191,12 @@ func (node *InstanceVariableWriteNode) Location() *Location {
 //	1
 //	^
 type IntegerNode struct {
-	Flags IntegerBaseFlags
 	Value *big.Int
 	Loc   *Location
 }
 
-func NewIntegerNode(flags IntegerBaseFlags, value *big.Int, loc *Location) *IntegerNode {
+func NewIntegerNode(value *big.Int, loc *Location) *IntegerNode {
 	return &IntegerNode{
-		Flags: flags,
 		Value: value,
 		Loc:   loc,
 	}
@@ -4407,22 +4204,6 @@ func NewIntegerNode(flags IntegerBaseFlags, value *big.Int, loc *Location) *Inte
 
 func (node *IntegerNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *IntegerNode) IsBinary() bool {
-	return (node.Flags & INTEGER_BASE_BINARY) != 0
-}
-
-func (node *IntegerNode) IsDecimal() bool {
-	return (node.Flags & INTEGER_BASE_DECIMAL) != 0
-}
-
-func (node *IntegerNode) IsOctal() bool {
-	return (node.Flags & INTEGER_BASE_OCTAL) != 0
-}
-
-func (node *IntegerNode) IsHexadecimal() bool {
-	return (node.Flags & INTEGER_BASE_HEXADECIMAL) != 0
 }
 
 func (node *IntegerNode) Children() []Node {
@@ -4434,7 +4215,6 @@ func (node *IntegerNode) Children() []Node {
 func (node *IntegerNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "IntegerNode",
-		"flags":    node.Flags,
 		"value":    node.Value,
 		"loc":      node.Loc,
 	})
@@ -4449,16 +4229,14 @@ func (node *IntegerNode) Location() *Location {
 //	if /foo #{bar} baz/ then end
 //	   ^^^^^^^^^^^^^^^^
 type InterpolatedMatchLastLineNode struct {
-	Flags      RegularExpressionFlags
 	Openingloc *Location
 	Parts      []Node
 	Closingloc *Location
 	Loc        *Location
 }
 
-func NewInterpolatedMatchLastLineNode(flags RegularExpressionFlags, openingLoc *Location, parts []Node, closingLoc *Location, loc *Location) *InterpolatedMatchLastLineNode {
+func NewInterpolatedMatchLastLineNode(openingLoc *Location, parts []Node, closingLoc *Location, loc *Location) *InterpolatedMatchLastLineNode {
 	return &InterpolatedMatchLastLineNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Parts:      parts,
 		Closingloc: closingLoc,
@@ -4468,50 +4246,6 @@ func NewInterpolatedMatchLastLineNode(flags RegularExpressionFlags, openingLoc *
 
 func (node *InterpolatedMatchLastLineNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *InterpolatedMatchLastLineNode) IsIgnoreCase() bool {
-	return (node.Flags & REGULAR_EXPRESSION_IGNORE_CASE) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsExtended() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EXTENDED) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsMultiLine() bool {
-	return (node.Flags & REGULAR_EXPRESSION_MULTI_LINE) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsOnce() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ONCE) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsEucJp() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EUC_JP) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsAscii8bit() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ASCII_8BIT) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsWindows31j() bool {
-	return (node.Flags & REGULAR_EXPRESSION_WINDOWS_31J) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsUtf8() bool {
-	return (node.Flags & REGULAR_EXPRESSION_UTF_8) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *InterpolatedMatchLastLineNode) IsForcedUsAsciiEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_US_ASCII_ENCODING) != 0
 }
 
 func (node *InterpolatedMatchLastLineNode) Children() []Node {
@@ -4525,7 +4259,6 @@ func (node *InterpolatedMatchLastLineNode) Children() []Node {
 func (node *InterpolatedMatchLastLineNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "InterpolatedMatchLastLineNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"parts":      node.Parts,
 		"closingLoc": node.Closingloc,
@@ -4542,16 +4275,14 @@ func (node *InterpolatedMatchLastLineNode) Location() *Location {
 //	/foo #{bar} baz/
 //	^^^^^^^^^^^^^^^^
 type InterpolatedRegularExpressionNode struct {
-	Flags      RegularExpressionFlags
 	Openingloc *Location
 	Parts      []Node
 	Closingloc *Location
 	Loc        *Location
 }
 
-func NewInterpolatedRegularExpressionNode(flags RegularExpressionFlags, openingLoc *Location, parts []Node, closingLoc *Location, loc *Location) *InterpolatedRegularExpressionNode {
+func NewInterpolatedRegularExpressionNode(openingLoc *Location, parts []Node, closingLoc *Location, loc *Location) *InterpolatedRegularExpressionNode {
 	return &InterpolatedRegularExpressionNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Parts:      parts,
 		Closingloc: closingLoc,
@@ -4561,50 +4292,6 @@ func NewInterpolatedRegularExpressionNode(flags RegularExpressionFlags, openingL
 
 func (node *InterpolatedRegularExpressionNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *InterpolatedRegularExpressionNode) IsIgnoreCase() bool {
-	return (node.Flags & REGULAR_EXPRESSION_IGNORE_CASE) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsExtended() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EXTENDED) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsMultiLine() bool {
-	return (node.Flags & REGULAR_EXPRESSION_MULTI_LINE) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsOnce() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ONCE) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsEucJp() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EUC_JP) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsAscii8bit() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ASCII_8BIT) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsWindows31j() bool {
-	return (node.Flags & REGULAR_EXPRESSION_WINDOWS_31J) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsUtf8() bool {
-	return (node.Flags & REGULAR_EXPRESSION_UTF_8) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *InterpolatedRegularExpressionNode) IsForcedUsAsciiEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_US_ASCII_ENCODING) != 0
 }
 
 func (node *InterpolatedRegularExpressionNode) Children() []Node {
@@ -4618,7 +4305,6 @@ func (node *InterpolatedRegularExpressionNode) Children() []Node {
 func (node *InterpolatedRegularExpressionNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "InterpolatedRegularExpressionNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"parts":      node.Parts,
 		"closingLoc": node.Closingloc,
@@ -4768,6 +4454,41 @@ func (node *InterpolatedXStringNode) Location() *Location {
 	return node.Loc
 }
 
+// Represents reading from the implicit `it` local variable.
+//
+//	-> { it }
+//	     ^^
+type ItLocalVariableReadNode struct {
+	Loc *Location
+}
+
+func NewItLocalVariableReadNode(loc *Location) *ItLocalVariableReadNode {
+	return &ItLocalVariableReadNode{
+		Loc: loc,
+	}
+}
+
+func (node *ItLocalVariableReadNode) Accept(visitor NodeVisitor) {
+	visitor.Visit(node)
+}
+
+func (node *ItLocalVariableReadNode) Children() []Node {
+	children := make([]Node, 0)
+
+	return children
+}
+
+func (node *ItLocalVariableReadNode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"nodeName": "ItLocalVariableReadNode",
+		"loc":      node.Loc,
+	})
+}
+
+func (node *ItLocalVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
 // Represents an implicit set of parameters through the use of the `it` keyword within a block or lambda.
 //
 //	-> { it + it }
@@ -4808,14 +4529,12 @@ func (node *ItParametersNode) Location() *Location {
 //	foo(a: b)
 //	    ^^^^
 type KeywordHashNode struct {
-	Flags    KeywordHashNodeFlags
 	Elements []Node
 	Loc      *Location
 }
 
-func NewKeywordHashNode(flags KeywordHashNodeFlags, elements []Node, loc *Location) *KeywordHashNode {
+func NewKeywordHashNode(elements []Node, loc *Location) *KeywordHashNode {
 	return &KeywordHashNode{
-		Flags:    flags,
 		Elements: elements,
 		Loc:      loc,
 	}
@@ -4823,10 +4542,6 @@ func NewKeywordHashNode(flags KeywordHashNodeFlags, elements []Node, loc *Locati
 
 func (node *KeywordHashNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *KeywordHashNode) IsSymbolKeys() bool {
-	return (node.Flags & KEYWORD_HASH_NODE_SYMBOL_KEYS) != 0
 }
 
 func (node *KeywordHashNode) Children() []Node {
@@ -4840,7 +4555,6 @@ func (node *KeywordHashNode) Children() []Node {
 func (node *KeywordHashNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "KeywordHashNode",
-		"flags":    node.Flags,
 		"elements": node.Elements,
 		"loc":      node.Loc,
 	})
@@ -4856,16 +4570,14 @@ func (node *KeywordHashNode) Location() *Location {
 //	      ^^^
 //	end
 type KeywordRestParameterNode struct {
-	Flags       ParameterFlags
 	Name        *string
 	Nameloc     *Location
 	Operatorloc *Location
 	Loc         *Location
 }
 
-func NewKeywordRestParameterNode(flags ParameterFlags, name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *KeywordRestParameterNode {
+func NewKeywordRestParameterNode(name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *KeywordRestParameterNode {
 	return &KeywordRestParameterNode{
-		Flags:       flags,
 		Name:        name,
 		Nameloc:     nameLoc,
 		Operatorloc: operatorLoc,
@@ -4877,10 +4589,6 @@ func (node *KeywordRestParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *KeywordRestParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
-}
-
 func (node *KeywordRestParameterNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -4890,7 +4598,6 @@ func (node *KeywordRestParameterNode) Children() []Node {
 func (node *KeywordRestParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "KeywordRestParameterNode",
-		"flags":       node.Flags,
 		"name":        node.Name,
 		"nameLoc":     node.Nameloc,
 		"operatorLoc": node.Operatorloc,
@@ -5020,24 +4727,24 @@ func (node *LocalVariableAndWriteNode) Location() *Location {
 //	target += value
 //	^^^^^^^^^^^^^^^
 type LocalVariableOperatorWriteNode struct {
-	Nameloc     *Location
-	Operatorloc *Location
-	Value       Node
-	Name        string
-	Operator    string
-	Depth       uint32
-	Loc         *Location
+	Nameloc           *Location
+	Binaryoperatorloc *Location
+	Value             Node
+	Name              string
+	Binaryoperator    string
+	Depth             uint32
+	Loc               *Location
 }
 
-func NewLocalVariableOperatorWriteNode(nameLoc *Location, operatorLoc *Location, value Node, name string, operator string, depth uint32, loc *Location) *LocalVariableOperatorWriteNode {
+func NewLocalVariableOperatorWriteNode(nameLoc *Location, binaryOperatorLoc *Location, value Node, name string, binaryOperator string, depth uint32, loc *Location) *LocalVariableOperatorWriteNode {
 	return &LocalVariableOperatorWriteNode{
-		Nameloc:     nameLoc,
-		Operatorloc: operatorLoc,
-		Value:       value,
-		Name:        name,
-		Operator:    operator,
-		Depth:       depth,
-		Loc:         loc,
+		Nameloc:           nameLoc,
+		Binaryoperatorloc: binaryOperatorLoc,
+		Value:             value,
+		Name:              name,
+		Binaryoperator:    binaryOperator,
+		Depth:             depth,
+		Loc:               loc,
 	}
 }
 
@@ -5055,14 +4762,14 @@ func (node *LocalVariableOperatorWriteNode) Children() []Node {
 
 func (node *LocalVariableOperatorWriteNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName":    "LocalVariableOperatorWriteNode",
-		"nameLoc":     node.Nameloc,
-		"operatorLoc": node.Operatorloc,
-		"value":       node.Value,
-		"name":        node.Name,
-		"operator":    node.Operator,
-		"depth":       node.Depth,
-		"loc":         node.Loc,
+		"nodeName":          "LocalVariableOperatorWriteNode",
+		"nameLoc":           node.Nameloc,
+		"binaryOperatorLoc": node.Binaryoperatorloc,
+		"value":             node.Value,
+		"name":              node.Name,
+		"binaryOperator":    node.Binaryoperator,
+		"depth":             node.Depth,
+		"loc":               node.Loc,
 	})
 }
 
@@ -5261,7 +4968,6 @@ func (node *LocalVariableWriteNode) Location() *Location {
 //	if /foo/i then end
 //	   ^^^^^^
 type MatchLastLineNode struct {
-	Flags      RegularExpressionFlags
 	Openingloc *Location
 	Contentloc *Location
 	Closingloc *Location
@@ -5269,9 +4975,8 @@ type MatchLastLineNode struct {
 	Loc        *Location
 }
 
-func NewMatchLastLineNode(flags RegularExpressionFlags, openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *MatchLastLineNode {
+func NewMatchLastLineNode(openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *MatchLastLineNode {
 	return &MatchLastLineNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Contentloc: contentLoc,
 		Closingloc: closingLoc,
@@ -5284,50 +4989,6 @@ func (node *MatchLastLineNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *MatchLastLineNode) IsIgnoreCase() bool {
-	return (node.Flags & REGULAR_EXPRESSION_IGNORE_CASE) != 0
-}
-
-func (node *MatchLastLineNode) IsExtended() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EXTENDED) != 0
-}
-
-func (node *MatchLastLineNode) IsMultiLine() bool {
-	return (node.Flags & REGULAR_EXPRESSION_MULTI_LINE) != 0
-}
-
-func (node *MatchLastLineNode) IsOnce() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ONCE) != 0
-}
-
-func (node *MatchLastLineNode) IsEucJp() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EUC_JP) != 0
-}
-
-func (node *MatchLastLineNode) IsAscii8bit() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ASCII_8BIT) != 0
-}
-
-func (node *MatchLastLineNode) IsWindows31j() bool {
-	return (node.Flags & REGULAR_EXPRESSION_WINDOWS_31J) != 0
-}
-
-func (node *MatchLastLineNode) IsUtf8() bool {
-	return (node.Flags & REGULAR_EXPRESSION_UTF_8) != 0
-}
-
-func (node *MatchLastLineNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *MatchLastLineNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *MatchLastLineNode) IsForcedUsAsciiEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_US_ASCII_ENCODING) != 0
-}
-
 func (node *MatchLastLineNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -5337,7 +4998,6 @@ func (node *MatchLastLineNode) Children() []Node {
 func (node *MatchLastLineNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "MatchLastLineNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"contentLoc": node.Contentloc,
 		"closingLoc": node.Closingloc,
@@ -5586,6 +5246,11 @@ func (node *ModuleNode) Location() *Location {
 //
 //	a, (b, c) = 1, 2, 3
 //	   ^^^^^^
+//
+// This can be a part of `MultiWriteNode` as above, or the target of a `for` loop
+//
+//	for a, b in [[1, 2], [3, 4]]
+//	    ^^^^
 type MultiTargetNode struct {
 	Lefts     []Node
 	Rest      Node
@@ -5910,16 +5575,14 @@ func (node *NumberedReferenceReadNode) Location() *Location {
 //	      ^^^^
 //	end
 type OptionalKeywordParameterNode struct {
-	Flags   ParameterFlags
 	Name    string
 	Nameloc *Location
 	Value   Node
 	Loc     *Location
 }
 
-func NewOptionalKeywordParameterNode(flags ParameterFlags, name string, nameLoc *Location, value Node, loc *Location) *OptionalKeywordParameterNode {
+func NewOptionalKeywordParameterNode(name string, nameLoc *Location, value Node, loc *Location) *OptionalKeywordParameterNode {
 	return &OptionalKeywordParameterNode{
-		Flags:   flags,
 		Name:    name,
 		Nameloc: nameLoc,
 		Value:   value,
@@ -5929,10 +5592,6 @@ func NewOptionalKeywordParameterNode(flags ParameterFlags, name string, nameLoc 
 
 func (node *OptionalKeywordParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *OptionalKeywordParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
 }
 
 func (node *OptionalKeywordParameterNode) Children() []Node {
@@ -5946,7 +5605,6 @@ func (node *OptionalKeywordParameterNode) Children() []Node {
 func (node *OptionalKeywordParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "OptionalKeywordParameterNode",
-		"flags":    node.Flags,
 		"name":     node.Name,
 		"nameLoc":  node.Nameloc,
 		"value":    node.Value,
@@ -5964,7 +5622,6 @@ func (node *OptionalKeywordParameterNode) Location() *Location {
 //	      ^^^^^
 //	end
 type OptionalParameterNode struct {
-	Flags       ParameterFlags
 	Name        string
 	Nameloc     *Location
 	Operatorloc *Location
@@ -5972,9 +5629,8 @@ type OptionalParameterNode struct {
 	Loc         *Location
 }
 
-func NewOptionalParameterNode(flags ParameterFlags, name string, nameLoc *Location, operatorLoc *Location, value Node, loc *Location) *OptionalParameterNode {
+func NewOptionalParameterNode(name string, nameLoc *Location, operatorLoc *Location, value Node, loc *Location) *OptionalParameterNode {
 	return &OptionalParameterNode{
-		Flags:       flags,
 		Name:        name,
 		Nameloc:     nameLoc,
 		Operatorloc: operatorLoc,
@@ -5985,10 +5641,6 @@ func NewOptionalParameterNode(flags ParameterFlags, name string, nameLoc *Locati
 
 func (node *OptionalParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *OptionalParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
 }
 
 func (node *OptionalParameterNode) Children() []Node {
@@ -6002,7 +5654,6 @@ func (node *OptionalParameterNode) Children() []Node {
 func (node *OptionalParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "OptionalParameterNode",
-		"flags":       node.Flags,
 		"name":        node.Name,
 		"nameLoc":     node.Nameloc,
 		"operatorLoc": node.Operatorloc,
@@ -6430,16 +6081,14 @@ func (node *ProgramNode) Location() *Location {
 //	c if a =~ /left/ ... b =~ /right/
 //	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 type RangeNode struct {
-	Flags       RangeFlags
 	Left        Node
 	Right       Node
 	Operatorloc *Location
 	Loc         *Location
 }
 
-func NewRangeNode(flags RangeFlags, left Node, right Node, operatorLoc *Location, loc *Location) *RangeNode {
+func NewRangeNode(left Node, right Node, operatorLoc *Location, loc *Location) *RangeNode {
 	return &RangeNode{
-		Flags:       flags,
 		Left:        left,
 		Right:       right,
 		Operatorloc: operatorLoc,
@@ -6449,10 +6098,6 @@ func NewRangeNode(flags RangeFlags, left Node, right Node, operatorLoc *Location
 
 func (node *RangeNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *RangeNode) IsExcludeEnd() bool {
-	return (node.Flags & RANGE_EXCLUDE_END) != 0
 }
 
 func (node *RangeNode) Children() []Node {
@@ -6472,7 +6117,6 @@ func (node *RangeNode) Children() []Node {
 func (node *RangeNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "RangeNode",
-		"flags":       node.Flags,
 		"left":        node.Left,
 		"right":       node.Right,
 		"operatorLoc": node.Operatorloc,
@@ -6489,14 +6133,16 @@ func (node *RangeNode) Location() *Location {
 //	1.0r
 //	^^^^
 type RationalNode struct {
-	Numeric Node
-	Loc     *Location
+	Numerator   *big.Int
+	Denominator *big.Int
+	Loc         *Location
 }
 
-func NewRationalNode(numeric Node, loc *Location) *RationalNode {
+func NewRationalNode(numerator *big.Int, denominator *big.Int, loc *Location) *RationalNode {
 	return &RationalNode{
-		Numeric: numeric,
-		Loc:     loc,
+		Numerator:   numerator,
+		Denominator: denominator,
+		Loc:         loc,
 	}
 }
 
@@ -6507,16 +6153,15 @@ func (node *RationalNode) Accept(visitor NodeVisitor) {
 func (node *RationalNode) Children() []Node {
 	children := make([]Node, 0)
 
-	children = append(children, node.Numeric)
-
 	return children
 }
 
 func (node *RationalNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName": "RationalNode",
-		"numeric":  node.Numeric,
-		"loc":      node.Loc,
+		"nodeName":    "RationalNode",
+		"numerator":   node.Numerator,
+		"denominator": node.Denominator,
+		"loc":         node.Loc,
 	})
 }
 
@@ -6564,7 +6209,6 @@ func (node *RedoNode) Location() *Location {
 //	/foo/i
 //	^^^^^^
 type RegularExpressionNode struct {
-	Flags      RegularExpressionFlags
 	Openingloc *Location
 	Contentloc *Location
 	Closingloc *Location
@@ -6572,9 +6216,8 @@ type RegularExpressionNode struct {
 	Loc        *Location
 }
 
-func NewRegularExpressionNode(flags RegularExpressionFlags, openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *RegularExpressionNode {
+func NewRegularExpressionNode(openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *RegularExpressionNode {
 	return &RegularExpressionNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Contentloc: contentLoc,
 		Closingloc: closingLoc,
@@ -6587,50 +6230,6 @@ func (node *RegularExpressionNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *RegularExpressionNode) IsIgnoreCase() bool {
-	return (node.Flags & REGULAR_EXPRESSION_IGNORE_CASE) != 0
-}
-
-func (node *RegularExpressionNode) IsExtended() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EXTENDED) != 0
-}
-
-func (node *RegularExpressionNode) IsMultiLine() bool {
-	return (node.Flags & REGULAR_EXPRESSION_MULTI_LINE) != 0
-}
-
-func (node *RegularExpressionNode) IsOnce() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ONCE) != 0
-}
-
-func (node *RegularExpressionNode) IsEucJp() bool {
-	return (node.Flags & REGULAR_EXPRESSION_EUC_JP) != 0
-}
-
-func (node *RegularExpressionNode) IsAscii8bit() bool {
-	return (node.Flags & REGULAR_EXPRESSION_ASCII_8BIT) != 0
-}
-
-func (node *RegularExpressionNode) IsWindows31j() bool {
-	return (node.Flags & REGULAR_EXPRESSION_WINDOWS_31J) != 0
-}
-
-func (node *RegularExpressionNode) IsUtf8() bool {
-	return (node.Flags & REGULAR_EXPRESSION_UTF_8) != 0
-}
-
-func (node *RegularExpressionNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *RegularExpressionNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *RegularExpressionNode) IsForcedUsAsciiEncoding() bool {
-	return (node.Flags & REGULAR_EXPRESSION_FORCED_US_ASCII_ENCODING) != 0
-}
-
 func (node *RegularExpressionNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -6640,7 +6239,6 @@ func (node *RegularExpressionNode) Children() []Node {
 func (node *RegularExpressionNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "RegularExpressionNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"contentLoc": node.Contentloc,
 		"closingLoc": node.Closingloc,
@@ -6659,15 +6257,13 @@ func (node *RegularExpressionNode) Location() *Location {
 //	      ^^
 //	end
 type RequiredKeywordParameterNode struct {
-	Flags   ParameterFlags
 	Name    string
 	Nameloc *Location
 	Loc     *Location
 }
 
-func NewRequiredKeywordParameterNode(flags ParameterFlags, name string, nameLoc *Location, loc *Location) *RequiredKeywordParameterNode {
+func NewRequiredKeywordParameterNode(name string, nameLoc *Location, loc *Location) *RequiredKeywordParameterNode {
 	return &RequiredKeywordParameterNode{
-		Flags:   flags,
 		Name:    name,
 		Nameloc: nameLoc,
 		Loc:     loc,
@@ -6676,10 +6272,6 @@ func NewRequiredKeywordParameterNode(flags ParameterFlags, name string, nameLoc 
 
 func (node *RequiredKeywordParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *RequiredKeywordParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
 }
 
 func (node *RequiredKeywordParameterNode) Children() []Node {
@@ -6691,7 +6283,6 @@ func (node *RequiredKeywordParameterNode) Children() []Node {
 func (node *RequiredKeywordParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "RequiredKeywordParameterNode",
-		"flags":    node.Flags,
 		"name":     node.Name,
 		"nameLoc":  node.Nameloc,
 		"loc":      node.Loc,
@@ -6708,25 +6299,19 @@ func (node *RequiredKeywordParameterNode) Location() *Location {
 //	      ^
 //	end
 type RequiredParameterNode struct {
-	Flags ParameterFlags
-	Name  string
-	Loc   *Location
+	Name string
+	Loc  *Location
 }
 
-func NewRequiredParameterNode(flags ParameterFlags, name string, loc *Location) *RequiredParameterNode {
+func NewRequiredParameterNode(name string, loc *Location) *RequiredParameterNode {
 	return &RequiredParameterNode{
-		Flags: flags,
-		Name:  name,
-		Loc:   loc,
+		Name: name,
+		Loc:  loc,
 	}
 }
 
 func (node *RequiredParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *RequiredParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
 }
 
 func (node *RequiredParameterNode) Children() []Node {
@@ -6738,7 +6323,6 @@ func (node *RequiredParameterNode) Children() []Node {
 func (node *RequiredParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName": "RequiredParameterNode",
-		"flags":    node.Flags,
 		"name":     node.Name,
 		"loc":      node.Loc,
 	})
@@ -6874,16 +6458,14 @@ func (node *RescueNode) Location() *Location {
 //	      ^^
 //	end
 type RestParameterNode struct {
-	Flags       ParameterFlags
 	Name        *string
 	Nameloc     *Location
 	Operatorloc *Location
 	Loc         *Location
 }
 
-func NewRestParameterNode(flags ParameterFlags, name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *RestParameterNode {
+func NewRestParameterNode(name *string, nameLoc *Location, operatorLoc *Location, loc *Location) *RestParameterNode {
 	return &RestParameterNode{
-		Flags:       flags,
 		Name:        name,
 		Nameloc:     nameLoc,
 		Operatorloc: operatorLoc,
@@ -6895,10 +6477,6 @@ func (node *RestParameterNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *RestParameterNode) IsRepeatedParameter() bool {
-	return (node.Flags & PARAMETER_REPEATED_PARAMETER) != 0
-}
-
 func (node *RestParameterNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -6908,7 +6486,6 @@ func (node *RestParameterNode) Children() []Node {
 func (node *RestParameterNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":    "RestParameterNode",
-		"flags":       node.Flags,
 		"name":        node.Name,
 		"nameLoc":     node.Nameloc,
 		"operatorLoc": node.Operatorloc,
@@ -7032,6 +6609,47 @@ func (node *SelfNode) MarshalJSON() ([]byte, error) {
 }
 
 func (node *SelfNode) Location() *Location {
+	return node.Loc
+}
+
+// This node wraps a constant write to indicate that when the value is written, it should have its shareability state modified.
+//
+//	# shareable_constant_value: literal
+//	C = { a: 1 }
+//	^^^^^^^^^^^^
+type ShareableConstantNode struct {
+	Write Node
+	Loc   *Location
+}
+
+func NewShareableConstantNode(write Node, loc *Location) *ShareableConstantNode {
+	return &ShareableConstantNode{
+		Write: write,
+		Loc:   loc,
+	}
+}
+
+func (node *ShareableConstantNode) Accept(visitor NodeVisitor) {
+	visitor.Visit(node)
+}
+
+func (node *ShareableConstantNode) Children() []Node {
+	children := make([]Node, 0)
+
+	children = append(children, node.Write)
+
+	return children
+}
+
+func (node *ShareableConstantNode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"nodeName": "ShareableConstantNode",
+		"write":    node.Write,
+		"loc":      node.Loc,
+	})
+}
+
+func (node *ShareableConstantNode) Location() *Location {
 	return node.Loc
 }
 
@@ -7298,7 +6916,6 @@ func (node *StatementsNode) Location() *Location {
 //	"foo #{bar} baz"
 //	 ^^^^      ^^^^
 type StringNode struct {
-	Flags      StringFlags
 	Openingloc *Location
 	Contentloc *Location
 	Closingloc *Location
@@ -7306,9 +6923,8 @@ type StringNode struct {
 	Loc        *Location
 }
 
-func NewStringNode(flags StringFlags, openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *StringNode {
+func NewStringNode(openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *StringNode {
 	return &StringNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Contentloc: contentLoc,
 		Closingloc: closingLoc,
@@ -7321,18 +6937,6 @@ func (node *StringNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *StringNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & STRING_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *StringNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & STRING_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *StringNode) IsFrozen() bool {
-	return (node.Flags & STRING_FROZEN) != 0
-}
-
 func (node *StringNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -7342,7 +6946,6 @@ func (node *StringNode) Children() []Node {
 func (node *StringNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "StringNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"contentLoc": node.Contentloc,
 		"closingLoc": node.Closingloc,
@@ -7424,7 +7027,6 @@ func (node *SuperNode) Location() *Location {
 //	%i[foo]
 //	   ^^^
 type SymbolNode struct {
-	Flags      SymbolFlags
 	Openingloc *Location
 	Valueloc   *Location
 	Closingloc *Location
@@ -7432,9 +7034,8 @@ type SymbolNode struct {
 	Loc        *Location
 }
 
-func NewSymbolNode(flags SymbolFlags, openingLoc *Location, valueLoc *Location, closingLoc *Location, unescaped string, loc *Location) *SymbolNode {
+func NewSymbolNode(openingLoc *Location, valueLoc *Location, closingLoc *Location, unescaped string, loc *Location) *SymbolNode {
 	return &SymbolNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Valueloc:   valueLoc,
 		Closingloc: closingLoc,
@@ -7447,18 +7048,6 @@ func (node *SymbolNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *SymbolNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & SYMBOL_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *SymbolNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & SYMBOL_FORCED_BINARY_ENCODING) != 0
-}
-
-func (node *SymbolNode) IsForcedUsAsciiEncoding() bool {
-	return (node.Flags & SYMBOL_FORCED_US_ASCII_ENCODING) != 0
-}
-
 func (node *SymbolNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -7468,7 +7057,6 @@ func (node *SymbolNode) Children() []Node {
 func (node *SymbolNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "SymbolNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"valueLoc":   node.Valueloc,
 		"closingLoc": node.Closingloc,
@@ -7633,7 +7221,6 @@ func (node *UnlessNode) Location() *Location {
 //	until foo do bar end
 //	^^^^^^^^^^^^^^^^^^^^
 type UntilNode struct {
-	Flags      LoopFlags
 	Keywordloc *Location
 	Closingloc *Location
 	Predicate  Node
@@ -7641,9 +7228,8 @@ type UntilNode struct {
 	Loc        *Location
 }
 
-func NewUntilNode(flags LoopFlags, keywordLoc *Location, closingLoc *Location, predicate Node, statements *StatementsNode, loc *Location) *UntilNode {
+func NewUntilNode(keywordLoc *Location, closingLoc *Location, predicate Node, statements *StatementsNode, loc *Location) *UntilNode {
 	return &UntilNode{
-		Flags:      flags,
 		Keywordloc: keywordLoc,
 		Closingloc: closingLoc,
 		Predicate:  predicate,
@@ -7654,10 +7240,6 @@ func NewUntilNode(flags LoopFlags, keywordLoc *Location, closingLoc *Location, p
 
 func (node *UntilNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *UntilNode) IsBeginModifier() bool {
-	return (node.Flags & LOOP_BEGIN_MODIFIER) != 0
 }
 
 func (node *UntilNode) Children() []Node {
@@ -7675,7 +7257,6 @@ func (node *UntilNode) Children() []Node {
 func (node *UntilNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "UntilNode",
-		"flags":      node.Flags,
 		"keywordLoc": node.Keywordloc,
 		"closingLoc": node.Closingloc,
 		"predicate":  node.Predicate,
@@ -7751,7 +7332,6 @@ func (node *WhenNode) Location() *Location {
 //	while foo do bar end
 //	^^^^^^^^^^^^^^^^^^^^
 type WhileNode struct {
-	Flags      LoopFlags
 	Keywordloc *Location
 	Closingloc *Location
 	Predicate  Node
@@ -7759,9 +7339,8 @@ type WhileNode struct {
 	Loc        *Location
 }
 
-func NewWhileNode(flags LoopFlags, keywordLoc *Location, closingLoc *Location, predicate Node, statements *StatementsNode, loc *Location) *WhileNode {
+func NewWhileNode(keywordLoc *Location, closingLoc *Location, predicate Node, statements *StatementsNode, loc *Location) *WhileNode {
 	return &WhileNode{
-		Flags:      flags,
 		Keywordloc: keywordLoc,
 		Closingloc: closingLoc,
 		Predicate:  predicate,
@@ -7772,10 +7351,6 @@ func NewWhileNode(flags LoopFlags, keywordLoc *Location, closingLoc *Location, p
 
 func (node *WhileNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
-}
-
-func (node *WhileNode) IsBeginModifier() bool {
-	return (node.Flags & LOOP_BEGIN_MODIFIER) != 0
 }
 
 func (node *WhileNode) Children() []Node {
@@ -7793,7 +7368,6 @@ func (node *WhileNode) Children() []Node {
 func (node *WhileNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "WhileNode",
-		"flags":      node.Flags,
 		"keywordLoc": node.Keywordloc,
 		"closingLoc": node.Closingloc,
 		"predicate":  node.Predicate,
@@ -7811,7 +7385,6 @@ func (node *WhileNode) Location() *Location {
 //	`foo`
 //	^^^^^
 type XStringNode struct {
-	Flags      EncodingFlags
 	Openingloc *Location
 	Contentloc *Location
 	Closingloc *Location
@@ -7819,9 +7392,8 @@ type XStringNode struct {
 	Loc        *Location
 }
 
-func NewXStringNode(flags EncodingFlags, openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *XStringNode {
+func NewXStringNode(openingLoc *Location, contentLoc *Location, closingLoc *Location, unescaped string, loc *Location) *XStringNode {
 	return &XStringNode{
-		Flags:      flags,
 		Openingloc: openingLoc,
 		Contentloc: contentLoc,
 		Closingloc: closingLoc,
@@ -7834,14 +7406,6 @@ func (node *XStringNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
-func (node *XStringNode) IsForcedUtf8Encoding() bool {
-	return (node.Flags & ENCODING_FORCED_UTF8_ENCODING) != 0
-}
-
-func (node *XStringNode) IsForcedBinaryEncoding() bool {
-	return (node.Flags & ENCODING_FORCED_BINARY_ENCODING) != 0
-}
-
 func (node *XStringNode) Children() []Node {
 	children := make([]Node, 0)
 
@@ -7851,7 +7415,6 @@ func (node *XStringNode) Children() []Node {
 func (node *XStringNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
 		"nodeName":   "XStringNode",
-		"flags":      node.Flags,
 		"openingLoc": node.Openingloc,
 		"contentLoc": node.Contentloc,
 		"closingLoc": node.Closingloc,

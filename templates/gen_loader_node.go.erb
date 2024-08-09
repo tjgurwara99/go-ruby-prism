@@ -119,13 +119,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
         return nil, fmt.Errorf("error reading param <%= arg(field) %>: %w", err)
       }
 
-      <%- when Prism::Template::FlagsField -%>
-      <%= arg(field) %>_, err := loadFlags(buff)
-      if err != nil {
-        return nil, fmt.Errorf("error reading param <%= arg(field) %>: %w", err)
-      }
-      <%= arg(field) %> := <%= field.options[:kind] %>(<%= arg(field) %>_)
-
       <%- when Prism::Template::IntegerField -%>
       <%= arg(field) %>, err := loadInteger(buff)
       if err != nil {

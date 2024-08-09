@@ -103,12 +103,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewAndNode(left, right, operatorLoc, nodeLoc), nil
 	case 5:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ArgumentsNodeFlags(flags_)
-
 		argumentsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param argumentsCount: %w", err)
@@ -122,14 +116,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			}
 		}
 
-		return NewArgumentsNode(flags, arguments, nodeLoc), nil
+		return NewArgumentsNode(arguments, nodeLoc), nil
 	case 6:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ArrayNodeFlags(flags_)
-
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
@@ -153,7 +141,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
-		return NewArrayNode(flags, elements, openingLoc, closingLoc, nodeLoc), nil
+		return NewArrayNode(elements, openingLoc, closingLoc, nodeLoc), nil
 	case 7:
 		constant_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
@@ -315,18 +303,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewBlockArgumentNode(expression, operatorLoc, nodeLoc), nil
 	case 13:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
-		return NewBlockLocalVariableNode(flags, name, nodeLoc), nil
+		return NewBlockLocalVariableNode(name, nodeLoc), nil
 	case 14:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
@@ -359,12 +341,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewBlockNode(locals, parameters, body, openingLoc, closingLoc, nodeLoc), nil
 	case 15:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -380,7 +356,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewBlockParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
+		return NewBlockParameterNode(name, nameLoc, operatorLoc, nodeLoc), nil
 	case 16:
 		parameters_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
@@ -434,12 +410,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewBreakNode(arguments, keywordLoc, nodeLoc), nil
 	case 18:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -479,14 +449,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewCallAndWriteNode(flags, receiver, callOperatorLoc, messageLoc, readName, writeName, operatorLoc, value, nodeLoc), nil
+		return NewCallAndWriteNode(receiver, callOperatorLoc, messageLoc, readName, writeName, operatorLoc, value, nodeLoc), nil
 	case 19:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -536,14 +500,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		block := block_
 
-		return NewCallNode(flags, receiver, callOperatorLoc, name, messageLoc, openingLoc, arguments, closingLoc, block, nodeLoc), nil
+		return NewCallNode(receiver, callOperatorLoc, name, messageLoc, openingLoc, arguments, closingLoc, block, nodeLoc), nil
 	case 20:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -571,14 +529,14 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param writeName: %w", err)
 		}
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -588,14 +546,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewCallOperatorWriteNode(flags, receiver, callOperatorLoc, messageLoc, readName, writeName, operator, operatorLoc, value, nodeLoc), nil
+		return NewCallOperatorWriteNode(receiver, callOperatorLoc, messageLoc, readName, writeName, binaryOperator, binaryOperatorLoc, value, nodeLoc), nil
 	case 21:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -635,14 +587,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewCallOrWriteNode(flags, receiver, callOperatorLoc, messageLoc, readName, writeName, operatorLoc, value, nodeLoc), nil
+		return NewCallOrWriteNode(receiver, callOperatorLoc, messageLoc, readName, writeName, operatorLoc, value, nodeLoc), nil
 	case 22:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -665,7 +611,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param messageLoc: %w", err)
 		}
 
-		return NewCallTargetNode(flags, receiver, callOperatorLoc, name, messageLoc, nodeLoc), nil
+		return NewCallTargetNode(receiver, callOperatorLoc, name, messageLoc, nodeLoc), nil
 	case 23:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
@@ -854,9 +800,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -866,12 +812,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		return NewClassVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
+		return NewClassVariableOperatorWriteNode(name, nameLoc, binaryOperatorLoc, value, binaryOperator, nodeLoc), nil
 	case 29:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -928,7 +874,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operatorLoc, err := loadOptionalLocation(buff)
+		operatorLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
@@ -969,9 +915,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -981,12 +927,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		return NewConstantOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
+		return NewConstantOperatorWriteNode(name, nameLoc, binaryOperatorLoc, value, binaryOperator, nodeLoc), nil
 	case 35:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -1043,19 +989,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		parent := parent_
 
-		child_, err := loadNode(buff, src, pool)
+		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param child: %w", err)
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
-
-		child := child_
 
 		delimiterLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param delimiterLoc: %w", err)
 		}
 
-		return NewConstantPathNode(parent, child, delimiterLoc, nodeLoc), nil
+		nameLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
+		}
+
+		return NewConstantPathNode(parent, name, delimiterLoc, nameLoc, nodeLoc), nil
 	case 38:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
@@ -1067,9 +1016,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param target: expected ConstantPathNode, got %T: %w", target_, err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -1079,12 +1028,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		return NewConstantPathOperatorWriteNode(target, operatorLoc, value, operator, nodeLoc), nil
+		return NewConstantPathOperatorWriteNode(target, binaryOperatorLoc, value, binaryOperator, nodeLoc), nil
 	case 39:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
@@ -1117,19 +1066,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		parent := parent_
 
-		child_, err := loadNode(buff, src, pool)
+		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param child: %w", err)
+			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
-
-		child := child_
 
 		delimiterLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param delimiterLoc: %w", err)
 		}
 
-		return NewConstantPathTargetNode(parent, child, delimiterLoc, nodeLoc), nil
+		nameLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
+		}
+
+		return NewConstantPathTargetNode(parent, name, delimiterLoc, nameLoc, nodeLoc), nil
 	case 41:
 		target_, err := loadNode(buff, src, pool)
 		if err != nil {
@@ -1418,12 +1370,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewFindPatternNode(constant, left, requireds, right, openingLoc, closingLoc, nodeLoc), nil
 	case 53:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := RangeFlags(flags_)
-
 		left_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param left: %w", err)
@@ -1443,7 +1389,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewFlipFlopNode(flags, left, right, operatorLoc, nodeLoc), nil
+		return NewFlipFlopNode(left, right, operatorLoc, nodeLoc), nil
 	case 54:
 		value := buff.readFloat64()
 
@@ -1545,9 +1491,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -1557,12 +1503,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		return NewGlobalVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
+		return NewGlobalVariableOperatorWriteNode(name, nameLoc, binaryOperatorLoc, value, binaryOperator, nodeLoc), nil
 	case 61:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -1780,12 +1726,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewInNode(pattern, statements, inLoc, thenLoc, nodeLoc), nil
 	case 72:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -1837,14 +1777,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewIndexAndWriteNode(flags, receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, operatorLoc, value, nodeLoc), nil
+		return NewIndexAndWriteNode(receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, operatorLoc, value, nodeLoc), nil
 	case 73:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -1884,14 +1818,14 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		block := block_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -1901,14 +1835,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewIndexOperatorWriteNode(flags, receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, operator, operatorLoc, value, nodeLoc), nil
+		return NewIndexOperatorWriteNode(receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, binaryOperator, binaryOperatorLoc, value, nodeLoc), nil
 	case 74:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -1960,14 +1888,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewIndexOrWriteNode(flags, receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, operatorLoc, value, nodeLoc), nil
+		return NewIndexOrWriteNode(receiver, callOperatorLoc, openingLoc, arguments, closingLoc, block, operatorLoc, value, nodeLoc), nil
 	case 75:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := CallNodeFlags(flags_)
-
 		receiver_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param receiver: %w", err)
@@ -2002,7 +1924,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		block := block_
 
-		return NewIndexTargetNode(flags, receiver, openingLoc, arguments, closingLoc, block, nodeLoc), nil
+		return NewIndexTargetNode(receiver, openingLoc, arguments, closingLoc, block, nodeLoc), nil
 	case 76:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -2038,9 +1960,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -2050,12 +1972,12 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
-		return NewInstanceVariableOperatorWriteNode(name, nameLoc, operatorLoc, value, operator, nodeLoc), nil
+		return NewInstanceVariableOperatorWriteNode(name, nameLoc, binaryOperatorLoc, value, binaryOperator, nodeLoc), nil
 	case 78:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -2119,25 +2041,13 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewInstanceVariableWriteNode(name, nameLoc, value, operatorLoc, nodeLoc), nil
 	case 82:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := IntegerBaseFlags(flags_)
-
 		value, err := loadInteger(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param value: %w", err)
 		}
 
-		return NewIntegerNode(flags, value, nodeLoc), nil
+		return NewIntegerNode(value, nodeLoc), nil
 	case 83:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := RegularExpressionFlags(flags_)
-
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -2161,14 +2071,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
-		return NewInterpolatedMatchLastLineNode(flags, openingLoc, parts, closingLoc, nodeLoc), nil
+		return NewInterpolatedMatchLastLineNode(openingLoc, parts, closingLoc, nodeLoc), nil
 	case 84:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := RegularExpressionFlags(flags_)
-
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -2192,7 +2096,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
-		return NewInterpolatedRegularExpressionNode(flags, openingLoc, parts, closingLoc, nodeLoc), nil
+		return NewInterpolatedRegularExpressionNode(openingLoc, parts, closingLoc, nodeLoc), nil
 	case 85:
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
@@ -2269,14 +2173,10 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		return NewInterpolatedXStringNode(openingLoc, parts, closingLoc, nodeLoc), nil
 	case 88:
-		return NewItParametersNode(nodeLoc), nil
+		return NewItLocalVariableReadNode(nodeLoc), nil
 	case 89:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := KeywordHashNodeFlags(flags_)
-
+		return NewItParametersNode(nodeLoc), nil
+	case 90:
 		elementsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param elementsCount: %w", err)
@@ -2290,14 +2190,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			}
 		}
 
-		return NewKeywordHashNode(flags, elements, nodeLoc), nil
-	case 90:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+		return NewKeywordHashNode(elements, nodeLoc), nil
+	case 91:
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -2313,8 +2207,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewKeywordRestParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
-	case 91:
+		return NewKeywordRestParameterNode(name, nameLoc, operatorLoc, nodeLoc), nil
+	case 92:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param locals: %w", err)
@@ -2350,7 +2244,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		body := body_
 
 		return NewLambdaNode(locals, operatorLoc, openingLoc, closingLoc, parameters, body, nodeLoc), nil
-	case 92:
+	case 93:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
@@ -2379,15 +2273,15 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewLocalVariableAndWriteNode(nameLoc, operatorLoc, value, name, depth, nodeLoc), nil
-	case 93:
+	case 94:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		operatorLoc, err := loadLocation(buff)
+		binaryOperatorLoc, err := loadLocation(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperatorLoc: %w", err)
 		}
 
 		value_, err := loadNode(buff, src, pool)
@@ -2402,9 +2296,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
-		operator, err := loadConstant(buff, pool)
+		binaryOperator, err := loadConstant(buff, pool)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param operator: %w", err)
+			return nil, fmt.Errorf("error reading param binaryOperator: %w", err)
 		}
 
 		depth, err := loadVarUInt(buff)
@@ -2412,8 +2306,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
-		return NewLocalVariableOperatorWriteNode(nameLoc, operatorLoc, value, name, operator, depth, nodeLoc), nil
-	case 94:
+		return NewLocalVariableOperatorWriteNode(nameLoc, binaryOperatorLoc, value, name, binaryOperator, depth, nodeLoc), nil
+	case 95:
 		nameLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
@@ -2442,18 +2336,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewLocalVariableOrWriteNode(nameLoc, operatorLoc, value, name, depth, nodeLoc), nil
-	case 95:
-		name, err := loadConstant(buff, pool)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param name: %w", err)
-		}
-
-		depth, err := loadVarUInt(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param depth: %w", err)
-		}
-
-		return NewLocalVariableReadNode(name, depth, nodeLoc), nil
 	case 96:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
@@ -2465,8 +2347,20 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param depth: %w", err)
 		}
 
-		return NewLocalVariableTargetNode(name, depth, nodeLoc), nil
+		return NewLocalVariableReadNode(name, depth, nodeLoc), nil
 	case 97:
+		name, err := loadConstant(buff, pool)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param name: %w", err)
+		}
+
+		depth, err := loadVarUInt(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param depth: %w", err)
+		}
+
+		return NewLocalVariableTargetNode(name, depth, nodeLoc), nil
+	case 98:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -2495,13 +2389,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewLocalVariableWriteNode(name, depth, nameLoc, value, operatorLoc, nodeLoc), nil
-	case 98:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := RegularExpressionFlags(flags_)
-
+	case 99:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -2523,28 +2411,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 		unescaped := string(unescaped_)
 
-		return NewMatchLastLineNode(flags, openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
-	case 99:
-		value_, err := loadNode(buff, src, pool)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param value: %w", err)
-		}
-
-		value := value_
-
-		pattern_, err := loadNode(buff, src, pool)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param pattern: %w", err)
-		}
-
-		pattern := pattern_
-
-		operatorLoc, err := loadLocation(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
-		}
-
-		return NewMatchPredicateNode(value, pattern, operatorLoc, nodeLoc), nil
+		return NewMatchLastLineNode(openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
 	case 100:
 		value_, err := loadNode(buff, src, pool)
 		if err != nil {
@@ -2565,8 +2432,29 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewMatchRequiredNode(value, pattern, operatorLoc, nodeLoc), nil
+		return NewMatchPredicateNode(value, pattern, operatorLoc, nodeLoc), nil
 	case 101:
+		value_, err := loadNode(buff, src, pool)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param value: %w", err)
+		}
+
+		value := value_
+
+		pattern_, err := loadNode(buff, src, pool)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param pattern: %w", err)
+		}
+
+		pattern := pattern_
+
+		operatorLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
+		}
+
+		return NewMatchRequiredNode(value, pattern, operatorLoc, nodeLoc), nil
+	case 102:
 		call_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param call: %w", err)
@@ -2591,9 +2479,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewMatchWriteNode(call, targets, nodeLoc), nil
-	case 102:
-		return NewMissingNode(nodeLoc), nil
 	case 103:
+		return NewMissingNode(nodeLoc), nil
+	case 104:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param locals: %w", err)
@@ -2629,7 +2517,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewModuleNode(locals, moduleKeywordLoc, constantPath, body, endKeywordLoc, name, nodeLoc), nil
-	case 104:
+	case 105:
 		leftsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param leftsCount: %w", err)
@@ -2674,7 +2562,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewMultiTargetNode(lefts, rest, rights, lparenLoc, rparenLoc, nodeLoc), nil
-	case 105:
+	case 106:
 		leftsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param leftsCount: %w", err)
@@ -2731,7 +2619,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		value := value_
 
 		return NewMultiWriteNode(lefts, rest, rights, lparenLoc, rparenLoc, operatorLoc, value, nodeLoc), nil
-	case 106:
+	case 107:
 		arguments_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param arguments: %w", err)
@@ -2748,9 +2636,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewNextNode(arguments, keywordLoc, nodeLoc), nil
-	case 107:
-		return NewNilNode(nodeLoc), nil
 	case 108:
+		return NewNilNode(nodeLoc), nil
+	case 109:
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
@@ -2762,27 +2650,21 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewNoKeywordsParameterNode(operatorLoc, keywordLoc, nodeLoc), nil
-	case 109:
+	case 110:
 		maximum, err := buff.readByte()
 		if err != nil {
 			return nil, fmt.Errorf("error reading param maximum: %w", err)
 		}
 
 		return NewNumberedParametersNode(maximum, nodeLoc), nil
-	case 110:
+	case 111:
 		number, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param number: %w", err)
 		}
 
 		return NewNumberedReferenceReadNode(number, nodeLoc), nil
-	case 111:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+	case 112:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -2800,14 +2682,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewOptionalKeywordParameterNode(flags, name, nameLoc, value, nodeLoc), nil
-	case 112:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+		return NewOptionalKeywordParameterNode(name, nameLoc, value, nodeLoc), nil
+	case 113:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -2830,8 +2706,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 
 		value := value_
 
-		return NewOptionalParameterNode(flags, name, nameLoc, operatorLoc, value, nodeLoc), nil
-	case 113:
+		return NewOptionalParameterNode(name, nameLoc, operatorLoc, value, nodeLoc), nil
+	case 114:
 		left_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param left: %w", err)
@@ -2852,7 +2728,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewOrNode(left, right, operatorLoc, nodeLoc), nil
-	case 114:
+	case 115:
 		requiredsCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param requiredsCount: %w", err)
@@ -2930,7 +2806,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewParametersNode(requireds, optionals, rest, posts, keywords, keywordRest, block, nodeLoc), nil
-	case 115:
+	case 116:
 		body_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param body: %w", err)
@@ -2949,7 +2825,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewParenthesesNode(body, openingLoc, closingLoc, nodeLoc), nil
-	case 116:
+	case 117:
 		expression_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param expression: %w", err)
@@ -2973,7 +2849,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewPinnedExpressionNode(expression, operatorLoc, lparenLoc, rparenLoc, nodeLoc), nil
-	case 117:
+	case 118:
 		variable_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param variable: %w", err)
@@ -2987,33 +2863,6 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewPinnedVariableNode(variable, operatorLoc, nodeLoc), nil
-	case 118:
-		statements_, err := loadOptionalNode(buff, src, pool)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param statements: %w", err)
-		}
-
-		statements, ok := statements_.(*StatementsNode)
-		if !ok && statements_ != nil {
-			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
-		}
-
-		keywordLoc, err := loadLocation(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
-		}
-
-		openingLoc, err := loadLocation(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
-		}
-
-		closingLoc, err := loadLocation(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
-		}
-
-		return NewPostExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
 	case 119:
 		statements_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
@@ -3040,8 +2889,35 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
 		}
 
-		return NewPreExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
+		return NewPostExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
 	case 120:
+		statements_, err := loadOptionalNode(buff, src, pool)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param statements: %w", err)
+		}
+
+		statements, ok := statements_.(*StatementsNode)
+		if !ok && statements_ != nil {
+			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
+		}
+
+		keywordLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
+		}
+
+		openingLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
+		}
+
+		closingLoc, err := loadLocation(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param closingLoc: %w", err)
+		}
+
+		return NewPreExecutionNode(statements, keywordLoc, openingLoc, closingLoc, nodeLoc), nil
+	case 121:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param locals: %w", err)
@@ -3058,13 +2934,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewProgramNode(locals, statements, nodeLoc), nil
-	case 121:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := RangeFlags(flags_)
-
+	case 122:
 		left_, err := loadOptionalNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param left: %w", err)
@@ -3084,25 +2954,22 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewRangeNode(flags, left, right, operatorLoc, nodeLoc), nil
-	case 122:
-		numeric_, err := loadNode(buff, src, pool)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param numeric: %w", err)
-		}
-
-		numeric := numeric_
-
-		return NewRationalNode(numeric, nodeLoc), nil
+		return NewRangeNode(left, right, operatorLoc, nodeLoc), nil
 	case 123:
-		return NewRedoNode(nodeLoc), nil
-	case 124:
-		flags_, err := loadFlags(buff)
+		numerator, err := loadInteger(buff)
 		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
+			return nil, fmt.Errorf("error reading param numerator: %w", err)
 		}
-		flags := RegularExpressionFlags(flags_)
 
+		denominator, err := loadInteger(buff)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param denominator: %w", err)
+		}
+
+		return NewRationalNode(numerator, denominator, nodeLoc), nil
+	case 124:
+		return NewRedoNode(nodeLoc), nil
+	case 125:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -3124,14 +2991,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 		unescaped := string(unescaped_)
 
-		return NewRegularExpressionNode(flags, openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
-	case 125:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+		return NewRegularExpressionNode(openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
+	case 126:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -3142,21 +3003,15 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param nameLoc: %w", err)
 		}
 
-		return NewRequiredKeywordParameterNode(flags, name, nameLoc, nodeLoc), nil
-	case 126:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+		return NewRequiredKeywordParameterNode(name, nameLoc, nodeLoc), nil
+	case 127:
 		name, err := loadConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
 		}
 
-		return NewRequiredParameterNode(flags, name, nodeLoc), nil
-	case 127:
+		return NewRequiredParameterNode(name, nodeLoc), nil
+	case 128:
 		expression_, err := loadNode(buff, src, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param expression: %w", err)
@@ -3177,7 +3032,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		rescueExpression := rescueExpression_
 
 		return NewRescueModifierNode(expression, keywordLoc, rescueExpression, nodeLoc), nil
-	case 128:
+	case 129:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3229,13 +3084,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewRescueNode(keywordLoc, exceptions, operatorLoc, reference, statements, consequent, nodeLoc), nil
-	case 129:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := ParameterFlags(flags_)
-
+	case 130:
 		name, err := loadOptionalConstant(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param name: %w", err)
@@ -3251,10 +3100,10 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
 		}
 
-		return NewRestParameterNode(flags, name, nameLoc, operatorLoc, nodeLoc), nil
-	case 130:
-		return NewRetryNode(nodeLoc), nil
+		return NewRestParameterNode(name, nameLoc, operatorLoc, nodeLoc), nil
 	case 131:
+		return NewRetryNode(nodeLoc), nil
+	case 132:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3271,9 +3120,18 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewReturnNode(keywordLoc, arguments, nodeLoc), nil
-	case 132:
-		return NewSelfNode(nodeLoc), nil
 	case 133:
+		return NewSelfNode(nodeLoc), nil
+	case 134:
+		write_, err := loadNode(buff, src, pool)
+		if err != nil {
+			return nil, fmt.Errorf("error reading param write: %w", err)
+		}
+
+		write := write_
+
+		return NewShareableConstantNode(write, nodeLoc), nil
+	case 135:
 		locals, err := loadConstants(buff, pool)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param locals: %w", err)
@@ -3309,9 +3167,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewSingletonClassNode(locals, classKeywordLoc, operatorLoc, expression, body, endKeywordLoc, nodeLoc), nil
-	case 134:
+	case 136:
 		return NewSourceEncodingNode(nodeLoc), nil
-	case 135:
+	case 137:
 		filepath_, err := loadStr(buff, src)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param filepath: %w", err)
@@ -3319,9 +3177,9 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		filepath := string(filepath_)
 
 		return NewSourceFileNode(filepath, nodeLoc), nil
-	case 136:
+	case 138:
 		return NewSourceLineNode(nodeLoc), nil
-	case 137:
+	case 139:
 		operatorLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param operatorLoc: %w", err)
@@ -3335,7 +3193,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		expression := expression_
 
 		return NewSplatNode(operatorLoc, expression, nodeLoc), nil
-	case 138:
+	case 140:
 		bodyCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param bodyCount: %w", err)
@@ -3350,13 +3208,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewStatementsNode(body, nodeLoc), nil
-	case 139:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := StringFlags(flags_)
-
+	case 141:
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -3378,8 +3230,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 		unescaped := string(unescaped_)
 
-		return NewStringNode(flags, openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
-	case 140:
+		return NewStringNode(openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
+	case 142:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3413,13 +3265,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		block := block_
 
 		return NewSuperNode(keywordLoc, lparenLoc, arguments, rparenLoc, block, nodeLoc), nil
-	case 141:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := SymbolFlags(flags_)
-
+	case 143:
 		openingLoc, err := loadOptionalLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -3441,10 +3287,10 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 		unescaped := string(unescaped_)
 
-		return NewSymbolNode(flags, openingLoc, valueLoc, closingLoc, unescaped, nodeLoc), nil
-	case 142:
+		return NewSymbolNode(openingLoc, valueLoc, closingLoc, unescaped, nodeLoc), nil
+	case 144:
 		return NewTrueNode(nodeLoc), nil
-	case 143:
+	case 145:
 		namesCount, err := loadVarUInt(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param namesCount: %w", err)
@@ -3464,7 +3310,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewUndefNode(names, keywordLoc, nodeLoc), nil
-	case 144:
+	case 146:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3508,13 +3354,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewUnlessNode(keywordLoc, predicate, thenKeywordLoc, statements, consequent, endKeywordLoc, nodeLoc), nil
-	case 145:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := LoopFlags(flags_)
-
+	case 147:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3542,8 +3382,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
-		return NewUntilNode(flags, keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
-	case 146:
+		return NewUntilNode(keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
+	case 148:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3578,13 +3418,7 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 
 		return NewWhenNode(keywordLoc, conditions, thenKeywordLoc, statements, nodeLoc), nil
-	case 147:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := LoopFlags(flags_)
-
+	case 149:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
@@ -3612,14 +3446,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 			return nil, fmt.Errorf("error reading param statements: expected StatementsNode, got %T: %w", statements_, err)
 		}
 
-		return NewWhileNode(flags, keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
-	case 148:
-		flags_, err := loadFlags(buff)
-		if err != nil {
-			return nil, fmt.Errorf("error reading param flags: %w", err)
-		}
-		flags := EncodingFlags(flags_)
-
+		return NewWhileNode(keywordLoc, closingLoc, predicate, statements, nodeLoc), nil
+	case 150:
 		openingLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param openingLoc: %w", err)
@@ -3641,8 +3469,8 @@ func loadNode(buff *buffer, src []byte, pool *constantPool) (Node, error) {
 		}
 		unescaped := string(unescaped_)
 
-		return NewXStringNode(flags, openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
-	case 149:
+		return NewXStringNode(openingLoc, contentLoc, closingLoc, unescaped, nodeLoc), nil
+	case 151:
 		keywordLoc, err := loadLocation(buff)
 		if err != nil {
 			return nil, fmt.Errorf("error reading param keywordLoc: %w", err)
