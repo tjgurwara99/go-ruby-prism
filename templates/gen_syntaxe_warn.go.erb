@@ -10,14 +10,14 @@ const (
 
 const (
 <%- warnings.each.with_index do |warning, i| -%>
-  <%= warning.name %> SyntaxWarningType = <%= i %>
+  <%= "WARN_" + warning.name %> SyntaxWarningType = <%= i %>
 <%- end -%>
 )
 
 var SyntaxWarningLevels = []SyntaxWarningLevel{SyntaxWarningDefault, SyntaxWarningVerbose}
 var SyntaxWarningTypes = []SyntaxWarningType{
 <%- warnings.each.with_index do |warning| -%>
-  <%= warning.name %>,
+  <%= "WARN_" + warning.name %>,
 <%- end -%>
 }
 

@@ -10,14 +10,14 @@ const (
 
 const (
 <%- errors.each.with_index do |error, i| -%>
-  <%= error.name %> SyntaxErrorType = <%= i %>
+  <%= "ERR_" + error.name %> SyntaxErrorType = <%= i %>
 <%- end -%>
 )
 
 var SyntaxErrorLevels = []SyntaxErrorLevel{SyntaxErrorFatal, SyntaxErrorArgument}
 var SyntaxErrorTypes = []SyntaxErrorType{
 <%- errors.each.with_index do |error| -%>
-  <%= error.name %>,
+  <%= "ERR_" + error.name %>,
 <%- end -%>
 }
 

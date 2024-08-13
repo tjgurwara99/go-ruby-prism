@@ -5,7 +5,8 @@ package parser
 type ArgumentsNodeFlags int16
 
 const (
-	ARGUMENTS_NODE_CONTAINS_KEYWORD_SPLAT ArgumentsNodeFlags = 1 << 0
+	ARGUMENTS_NODE_CONTAINS_KEYWORDS      ArgumentsNodeFlags = 1 << 0
+	ARGUMENTS_NODE_CONTAINS_KEYWORD_SPLAT ArgumentsNodeFlags = 1 << 1
 )
 
 type ArrayNodeFlags int16
@@ -37,6 +38,13 @@ const (
 	INTEGER_BASE_DECIMAL     IntegerBaseFlags = 1 << 1
 	INTEGER_BASE_OCTAL       IntegerBaseFlags = 1 << 2
 	INTEGER_BASE_HEXADECIMAL IntegerBaseFlags = 1 << 3
+)
+
+type InterpolatedStringNodeFlags int16
+
+const (
+	INTERPOLATED_STRING_NODE_FROZEN  InterpolatedStringNodeFlags = 1 << 0
+	INTERPOLATED_STRING_NODE_MUTABLE InterpolatedStringNodeFlags = 1 << 1
 )
 
 type KeywordHashNodeFlags int16
@@ -79,12 +87,27 @@ const (
 	REGULAR_EXPRESSION_FORCED_US_ASCII_ENCODING RegularExpressionFlags = 1 << 10
 )
 
+type ReturnNodeFlags int16
+
+const (
+	RETURN_NODE_REDUNDANT ReturnNodeFlags = 1 << 0
+)
+
+type ShareableConstantNodeFlags int16
+
+const (
+	SHAREABLE_CONSTANT_NODE_LITERAL                 ShareableConstantNodeFlags = 1 << 0
+	SHAREABLE_CONSTANT_NODE_EXPERIMENTAL_EVERYTHING ShareableConstantNodeFlags = 1 << 1
+	SHAREABLE_CONSTANT_NODE_EXPERIMENTAL_COPY       ShareableConstantNodeFlags = 1 << 2
+)
+
 type StringFlags int16
 
 const (
 	STRING_FORCED_UTF8_ENCODING   StringFlags = 1 << 0
 	STRING_FORCED_BINARY_ENCODING StringFlags = 1 << 1
 	STRING_FROZEN                 StringFlags = 1 << 2
+	STRING_MUTABLE                StringFlags = 1 << 3
 )
 
 type SymbolFlags int16
