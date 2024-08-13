@@ -4788,6 +4788,41 @@ func (node *InterpolatedXStringNode) Location() *Location {
 	return node.Loc
 }
 
+// Represents reading from the implicit `it` local variable.
+//
+//	-> { it }
+//	     ^^
+type ItLocalVariableReadNode struct {
+	Loc *Location
+}
+
+func NewItLocalVariableReadNode(loc *Location) *ItLocalVariableReadNode {
+	return &ItLocalVariableReadNode{
+		Loc: loc,
+	}
+}
+
+func (node *ItLocalVariableReadNode) Accept(visitor NodeVisitor) {
+	visitor.Visit(node)
+}
+
+func (node *ItLocalVariableReadNode) Children() []Node {
+	children := make([]Node, 0)
+
+	return children
+}
+
+func (node *ItLocalVariableReadNode) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"nodeName": "ItLocalVariableReadNode",
+		"loc":      node.Loc,
+	})
+}
+
+func (node *ItLocalVariableReadNode) Location() *Location {
+	return node.Loc
+}
+
 // Represents an implicit set of parameters through the use of the `it` keyword within a block or lambda.
 //
 //	-> { it + it }
@@ -6509,14 +6544,18 @@ func (node *RangeNode) Location() *Location {
 //	1.0r
 //	^^^^
 type RationalNode struct {
-	Numeric Node
-	Loc     *Location
+	Flags       IntegerBaseFlags
+	Numerator   *big.Int
+	Denominator *big.Int
+	Loc         *Location
 }
 
-func NewRationalNode(numeric Node, loc *Location) *RationalNode {
+func NewRationalNode(flags IntegerBaseFlags, numerator *big.Int, denominator *big.Int, loc *Location) *RationalNode {
 	return &RationalNode{
-		Numeric: numeric,
-		Loc:     loc,
+		Flags:       flags,
+		Numerator:   numerator,
+		Denominator: denominator,
+		Loc:         loc,
 	}
 }
 
@@ -6524,19 +6563,35 @@ func (node *RationalNode) Accept(visitor NodeVisitor) {
 	visitor.Visit(node)
 }
 
+func (node *RationalNode) IsBinary() bool {
+	return (node.Flags & INTEGER_BASE_BINARY) != 0
+}
+
+func (node *RationalNode) IsDecimal() bool {
+	return (node.Flags & INTEGER_BASE_DECIMAL) != 0
+}
+
+func (node *RationalNode) IsOctal() bool {
+	return (node.Flags & INTEGER_BASE_OCTAL) != 0
+}
+
+func (node *RationalNode) IsHexadecimal() bool {
+	return (node.Flags & INTEGER_BASE_HEXADECIMAL) != 0
+}
+
 func (node *RationalNode) Children() []Node {
 	children := make([]Node, 0)
-
-	children = append(children, node.Numeric)
 
 	return children
 }
 
 func (node *RationalNode) MarshalJSON() ([]byte, error) {
 	return json.Marshal(map[string]interface{}{
-		"nodeName": "RationalNode",
-		"numeric":  node.Numeric,
-		"loc":      node.Loc,
+		"nodeName":    "RationalNode",
+		"flags":       node.Flags,
+		"numerator":   node.Numerator,
+		"denominator": node.Denominator,
+		"loc":         node.Loc,
 	})
 }
 

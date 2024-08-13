@@ -8,7 +8,7 @@ import (
 
 const prismHeader = "PRISM"
 const majorVersion = 0
-const minorVersion = 29
+const minorVersion = 30
 const patchVersion = 0
 
 func deserialize(serialized []byte, source []byte) (*ParseResult, error) {

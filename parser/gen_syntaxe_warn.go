@@ -11,38 +11,40 @@ const (
 )
 
 const (
-	WARN_AMBIGUOUS_FIRST_ARGUMENT_MINUS   SyntaxWarningType = 0
-	WARN_AMBIGUOUS_FIRST_ARGUMENT_PLUS    SyntaxWarningType = 1
-	WARN_AMBIGUOUS_PREFIX_AMPERSAND       SyntaxWarningType = 2
-	WARN_AMBIGUOUS_PREFIX_STAR            SyntaxWarningType = 3
-	WARN_AMBIGUOUS_PREFIX_STAR_STAR       SyntaxWarningType = 4
-	WARN_AMBIGUOUS_SLASH                  SyntaxWarningType = 5
-	WARN_COMPARISON_AFTER_COMPARISON      SyntaxWarningType = 6
-	WARN_DOT_DOT_DOT_EOL                  SyntaxWarningType = 7
-	WARN_EQUAL_IN_CONDITIONAL             SyntaxWarningType = 8
-	WARN_EQUAL_IN_CONDITIONAL_3_3         SyntaxWarningType = 9
-	WARN_END_IN_METHOD                    SyntaxWarningType = 10
-	WARN_DUPLICATED_HASH_KEY              SyntaxWarningType = 11
-	WARN_DUPLICATED_WHEN_CLAUSE           SyntaxWarningType = 12
-	WARN_FLOAT_OUT_OF_RANGE               SyntaxWarningType = 13
-	WARN_IGNORED_FROZEN_STRING_LITERAL    SyntaxWarningType = 14
-	WARN_INTEGER_IN_FLIP_FLOP             SyntaxWarningType = 15
-	WARN_INVALID_CHARACTER                SyntaxWarningType = 16
-	WARN_INVALID_NUMBERED_REFERENCE       SyntaxWarningType = 17
-	WARN_INVALID_SHAREABLE_CONSTANT_VALUE SyntaxWarningType = 18
-	WARN_KEYWORD_EOL                      SyntaxWarningType = 19
-	WARN_LITERAL_IN_CONDITION_DEFAULT     SyntaxWarningType = 20
-	WARN_LITERAL_IN_CONDITION_VERBOSE     SyntaxWarningType = 21
-	WARN_SHAREABLE_CONSTANT_VALUE_LINE    SyntaxWarningType = 22
-	WARN_SHEBANG_CARRIAGE_RETURN          SyntaxWarningType = 23
-	WARN_UNEXPECTED_CARRIAGE_RETURN       SyntaxWarningType = 24
-	WARN_UNREACHABLE_STATEMENT            SyntaxWarningType = 25
-	WARN_UNUSED_LOCAL_VARIABLE            SyntaxWarningType = 26
-	WARN_VOID_STATEMENT                   SyntaxWarningType = 27
+	WARN_AMBIGUOUS_BINARY_OPERATOR        SyntaxWarningType = 0
+	WARN_AMBIGUOUS_FIRST_ARGUMENT_MINUS   SyntaxWarningType = 1
+	WARN_AMBIGUOUS_FIRST_ARGUMENT_PLUS    SyntaxWarningType = 2
+	WARN_AMBIGUOUS_PREFIX_AMPERSAND       SyntaxWarningType = 3
+	WARN_AMBIGUOUS_PREFIX_STAR            SyntaxWarningType = 4
+	WARN_AMBIGUOUS_PREFIX_STAR_STAR       SyntaxWarningType = 5
+	WARN_AMBIGUOUS_SLASH                  SyntaxWarningType = 6
+	WARN_COMPARISON_AFTER_COMPARISON      SyntaxWarningType = 7
+	WARN_DOT_DOT_DOT_EOL                  SyntaxWarningType = 8
+	WARN_EQUAL_IN_CONDITIONAL             SyntaxWarningType = 9
+	WARN_EQUAL_IN_CONDITIONAL_3_3         SyntaxWarningType = 10
+	WARN_END_IN_METHOD                    SyntaxWarningType = 11
+	WARN_DUPLICATED_HASH_KEY              SyntaxWarningType = 12
+	WARN_DUPLICATED_WHEN_CLAUSE           SyntaxWarningType = 13
+	WARN_FLOAT_OUT_OF_RANGE               SyntaxWarningType = 14
+	WARN_IGNORED_FROZEN_STRING_LITERAL    SyntaxWarningType = 15
+	WARN_INTEGER_IN_FLIP_FLOP             SyntaxWarningType = 16
+	WARN_INVALID_CHARACTER                SyntaxWarningType = 17
+	WARN_INVALID_NUMBERED_REFERENCE       SyntaxWarningType = 18
+	WARN_INVALID_SHAREABLE_CONSTANT_VALUE SyntaxWarningType = 19
+	WARN_KEYWORD_EOL                      SyntaxWarningType = 20
+	WARN_LITERAL_IN_CONDITION_DEFAULT     SyntaxWarningType = 21
+	WARN_LITERAL_IN_CONDITION_VERBOSE     SyntaxWarningType = 22
+	WARN_SHAREABLE_CONSTANT_VALUE_LINE    SyntaxWarningType = 23
+	WARN_SHEBANG_CARRIAGE_RETURN          SyntaxWarningType = 24
+	WARN_UNEXPECTED_CARRIAGE_RETURN       SyntaxWarningType = 25
+	WARN_UNREACHABLE_STATEMENT            SyntaxWarningType = 26
+	WARN_UNUSED_LOCAL_VARIABLE            SyntaxWarningType = 27
+	WARN_VOID_STATEMENT                   SyntaxWarningType = 28
 )
 
 var SyntaxWarningLevels = []SyntaxWarningLevel{SyntaxWarningDefault, SyntaxWarningVerbose}
 var SyntaxWarningTypes = []SyntaxWarningType{
+	WARN_AMBIGUOUS_BINARY_OPERATOR,
 	WARN_AMBIGUOUS_FIRST_ARGUMENT_MINUS,
 	WARN_AMBIGUOUS_FIRST_ARGUMENT_PLUS,
 	WARN_AMBIGUOUS_PREFIX_AMPERSAND,

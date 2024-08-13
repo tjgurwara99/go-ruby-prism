@@ -126,164 +126,168 @@ const (
 	ERR_EXPRESSION_NOT_WRITABLE_FILE       SyntaxErrorType = 112
 	ERR_EXPRESSION_NOT_WRITABLE_LINE       SyntaxErrorType = 113
 	ERR_EXPRESSION_NOT_WRITABLE_NIL        SyntaxErrorType = 114
-	ERR_EXPRESSION_NOT_WRITABLE_SELF       SyntaxErrorType = 115
-	ERR_EXPRESSION_NOT_WRITABLE_TRUE       SyntaxErrorType = 116
-	ERR_FLOAT_PARSE                        SyntaxErrorType = 117
-	ERR_FOR_COLLECTION                     SyntaxErrorType = 118
-	ERR_FOR_IN                             SyntaxErrorType = 119
-	ERR_FOR_INDEX                          SyntaxErrorType = 120
-	ERR_FOR_TERM                           SyntaxErrorType = 121
-	ERR_GLOBAL_VARIABLE_BARE               SyntaxErrorType = 122
-	ERR_HASH_EXPRESSION_AFTER_LABEL        SyntaxErrorType = 123
-	ERR_HASH_KEY                           SyntaxErrorType = 124
-	ERR_HASH_ROCKET                        SyntaxErrorType = 125
-	ERR_HASH_TERM                          SyntaxErrorType = 126
-	ERR_HASH_VALUE                         SyntaxErrorType = 127
-	ERR_HEREDOC_IDENTIFIER                 SyntaxErrorType = 128
-	ERR_HEREDOC_TERM                       SyntaxErrorType = 129
-	ERR_INCOMPLETE_QUESTION_MARK           SyntaxErrorType = 130
-	ERR_INCOMPLETE_VARIABLE_CLASS          SyntaxErrorType = 131
-	ERR_INCOMPLETE_VARIABLE_CLASS_3_3      SyntaxErrorType = 132
-	ERR_INCOMPLETE_VARIABLE_INSTANCE       SyntaxErrorType = 133
-	ERR_INCOMPLETE_VARIABLE_INSTANCE_3_3   SyntaxErrorType = 134
-	ERR_INSTANCE_VARIABLE_BARE             SyntaxErrorType = 135
-	ERR_INVALID_BLOCK_EXIT                 SyntaxErrorType = 136
-	ERR_INVALID_CHARACTER                  SyntaxErrorType = 137
-	ERR_INVALID_ENCODING_MAGIC_COMMENT     SyntaxErrorType = 138
-	ERR_INVALID_ESCAPE_CHARACTER           SyntaxErrorType = 139
-	ERR_INVALID_FLOAT_EXPONENT             SyntaxErrorType = 140
-	ERR_INVALID_LOCAL_VARIABLE_READ        SyntaxErrorType = 141
-	ERR_INVALID_LOCAL_VARIABLE_WRITE       SyntaxErrorType = 142
-	ERR_INVALID_MULTIBYTE_CHAR             SyntaxErrorType = 143
-	ERR_INVALID_MULTIBYTE_CHARACTER        SyntaxErrorType = 144
-	ERR_INVALID_MULTIBYTE_ESCAPE           SyntaxErrorType = 145
-	ERR_INVALID_NUMBER_BINARY              SyntaxErrorType = 146
-	ERR_INVALID_NUMBER_DECIMAL             SyntaxErrorType = 147
-	ERR_INVALID_NUMBER_FRACTION            SyntaxErrorType = 148
-	ERR_INVALID_NUMBER_HEXADECIMAL         SyntaxErrorType = 149
-	ERR_INVALID_NUMBER_OCTAL               SyntaxErrorType = 150
-	ERR_INVALID_NUMBER_UNDERSCORE_INNER    SyntaxErrorType = 151
-	ERR_INVALID_NUMBER_UNDERSCORE_TRAILING SyntaxErrorType = 152
-	ERR_INVALID_PERCENT                    SyntaxErrorType = 153
-	ERR_INVALID_PRINTABLE_CHARACTER        SyntaxErrorType = 154
-	ERR_INVALID_RETRY_AFTER_ELSE           SyntaxErrorType = 155
-	ERR_INVALID_RETRY_AFTER_ENSURE         SyntaxErrorType = 156
-	ERR_INVALID_RETRY_WITHOUT_RESCUE       SyntaxErrorType = 157
-	ERR_INVALID_SYMBOL                     SyntaxErrorType = 158
-	ERR_INVALID_VARIABLE_GLOBAL            SyntaxErrorType = 159
-	ERR_INVALID_VARIABLE_GLOBAL_3_3        SyntaxErrorType = 160
-	ERR_INVALID_YIELD                      SyntaxErrorType = 161
-	ERR_IT_NOT_ALLOWED_NUMBERED            SyntaxErrorType = 162
-	ERR_IT_NOT_ALLOWED_ORDINARY            SyntaxErrorType = 163
-	ERR_LAMBDA_OPEN                        SyntaxErrorType = 164
-	ERR_LAMBDA_TERM_BRACE                  SyntaxErrorType = 165
-	ERR_LAMBDA_TERM_END                    SyntaxErrorType = 166
-	ERR_LIST_I_LOWER_ELEMENT               SyntaxErrorType = 167
-	ERR_LIST_I_LOWER_TERM                  SyntaxErrorType = 168
-	ERR_LIST_I_UPPER_ELEMENT               SyntaxErrorType = 169
-	ERR_LIST_I_UPPER_TERM                  SyntaxErrorType = 170
-	ERR_LIST_W_LOWER_ELEMENT               SyntaxErrorType = 171
-	ERR_LIST_W_LOWER_TERM                  SyntaxErrorType = 172
-	ERR_LIST_W_UPPER_ELEMENT               SyntaxErrorType = 173
-	ERR_LIST_W_UPPER_TERM                  SyntaxErrorType = 174
-	ERR_MALLOC_FAILED                      SyntaxErrorType = 175
-	ERR_MIXED_ENCODING                     SyntaxErrorType = 176
-	ERR_MODULE_IN_METHOD                   SyntaxErrorType = 177
-	ERR_MODULE_NAME                        SyntaxErrorType = 178
-	ERR_MODULE_TERM                        SyntaxErrorType = 179
-	ERR_MULTI_ASSIGN_MULTI_SPLATS          SyntaxErrorType = 180
-	ERR_MULTI_ASSIGN_UNEXPECTED_REST       SyntaxErrorType = 181
-	ERR_NO_LOCAL_VARIABLE                  SyntaxErrorType = 182
-	ERR_NOT_EXPRESSION                     SyntaxErrorType = 183
-	ERR_NUMBER_LITERAL_UNDERSCORE          SyntaxErrorType = 184
-	ERR_NUMBERED_PARAMETER_IT              SyntaxErrorType = 185
-	ERR_NUMBERED_PARAMETER_ORDINARY        SyntaxErrorType = 186
-	ERR_NUMBERED_PARAMETER_OUTER_SCOPE     SyntaxErrorType = 187
-	ERR_OPERATOR_MULTI_ASSIGN              SyntaxErrorType = 188
-	ERR_OPERATOR_WRITE_ARGUMENTS           SyntaxErrorType = 189
-	ERR_OPERATOR_WRITE_BLOCK               SyntaxErrorType = 190
-	ERR_PARAMETER_ASSOC_SPLAT_MULTI        SyntaxErrorType = 191
-	ERR_PARAMETER_BLOCK_MULTI              SyntaxErrorType = 192
-	ERR_PARAMETER_CIRCULAR                 SyntaxErrorType = 193
-	ERR_PARAMETER_FORWARDING_AFTER_REST    SyntaxErrorType = 194
-	ERR_PARAMETER_METHOD_NAME              SyntaxErrorType = 195
-	ERR_PARAMETER_NAME_DUPLICATED          SyntaxErrorType = 196
-	ERR_PARAMETER_NO_DEFAULT               SyntaxErrorType = 197
-	ERR_PARAMETER_NO_DEFAULT_KW            SyntaxErrorType = 198
-	ERR_PARAMETER_NUMBERED_RESERVED        SyntaxErrorType = 199
-	ERR_PARAMETER_ORDER                    SyntaxErrorType = 200
-	ERR_PARAMETER_SPLAT_MULTI              SyntaxErrorType = 201
-	ERR_PARAMETER_STAR                     SyntaxErrorType = 202
-	ERR_PARAMETER_UNEXPECTED_FWD           SyntaxErrorType = 203
-	ERR_PARAMETER_WILD_LOOSE_COMMA         SyntaxErrorType = 204
-	ERR_PARAMETER_UNEXPECTED_NO_KW         SyntaxErrorType = 205
-	ERR_PATTERN_CAPTURE_DUPLICATE          SyntaxErrorType = 206
-	ERR_PATTERN_EXPRESSION_AFTER_BRACKET   SyntaxErrorType = 207
-	ERR_PATTERN_EXPRESSION_AFTER_COMMA     SyntaxErrorType = 208
-	ERR_PATTERN_EXPRESSION_AFTER_HROCKET   SyntaxErrorType = 209
-	ERR_PATTERN_EXPRESSION_AFTER_IN        SyntaxErrorType = 210
-	ERR_PATTERN_EXPRESSION_AFTER_KEY       SyntaxErrorType = 211
-	ERR_PATTERN_EXPRESSION_AFTER_PAREN     SyntaxErrorType = 212
-	ERR_PATTERN_EXPRESSION_AFTER_PIN       SyntaxErrorType = 213
-	ERR_PATTERN_EXPRESSION_AFTER_PIPE      SyntaxErrorType = 214
-	ERR_PATTERN_EXPRESSION_AFTER_RANGE     SyntaxErrorType = 215
-	ERR_PATTERN_EXPRESSION_AFTER_REST      SyntaxErrorType = 216
-	ERR_PATTERN_HASH_IMPLICIT              SyntaxErrorType = 217
-	ERR_PATTERN_HASH_KEY                   SyntaxErrorType = 218
-	ERR_PATTERN_HASH_KEY_DUPLICATE         SyntaxErrorType = 219
-	ERR_PATTERN_HASH_KEY_INTERPOLATED      SyntaxErrorType = 220
-	ERR_PATTERN_HASH_KEY_LABEL             SyntaxErrorType = 221
-	ERR_PATTERN_HASH_KEY_LOCALS            SyntaxErrorType = 222
-	ERR_PATTERN_IDENT_AFTER_HROCKET        SyntaxErrorType = 223
-	ERR_PATTERN_LABEL_AFTER_COMMA          SyntaxErrorType = 224
-	ERR_PATTERN_REST                       SyntaxErrorType = 225
-	ERR_PATTERN_TERM_BRACE                 SyntaxErrorType = 226
-	ERR_PATTERN_TERM_BRACKET               SyntaxErrorType = 227
-	ERR_PATTERN_TERM_PAREN                 SyntaxErrorType = 228
-	ERR_PIPEPIPEEQ_MULTI_ASSIGN            SyntaxErrorType = 229
-	ERR_REGEXP_ENCODING_OPTION_MISMATCH    SyntaxErrorType = 230
-	ERR_REGEXP_INCOMPAT_CHAR_ENCODING      SyntaxErrorType = 231
-	ERR_REGEXP_INVALID_UNICODE_RANGE       SyntaxErrorType = 232
-	ERR_REGEXP_NON_ESCAPED_MBC             SyntaxErrorType = 233
-	ERR_REGEXP_TERM                        SyntaxErrorType = 234
-	ERR_REGEXP_UNKNOWN_OPTIONS             SyntaxErrorType = 235
-	ERR_REGEXP_UTF8_CHAR_NON_UTF8_REGEXP   SyntaxErrorType = 236
-	ERR_RESCUE_EXPRESSION                  SyntaxErrorType = 237
-	ERR_RESCUE_MODIFIER_VALUE              SyntaxErrorType = 238
-	ERR_RESCUE_TERM                        SyntaxErrorType = 239
-	ERR_RESCUE_VARIABLE                    SyntaxErrorType = 240
-	ERR_RETURN_INVALID                     SyntaxErrorType = 241
-	ERR_SCRIPT_NOT_FOUND                   SyntaxErrorType = 242
-	ERR_SINGLETON_FOR_LITERALS             SyntaxErrorType = 243
-	ERR_STATEMENT_ALIAS                    SyntaxErrorType = 244
-	ERR_STATEMENT_POSTEXE_END              SyntaxErrorType = 245
-	ERR_STATEMENT_PREEXE_BEGIN             SyntaxErrorType = 246
-	ERR_STATEMENT_UNDEF                    SyntaxErrorType = 247
-	ERR_STRING_CONCATENATION               SyntaxErrorType = 248
-	ERR_STRING_INTERPOLATED_TERM           SyntaxErrorType = 249
-	ERR_STRING_LITERAL_EOF                 SyntaxErrorType = 250
-	ERR_STRING_LITERAL_TERM                SyntaxErrorType = 251
-	ERR_SYMBOL_INVALID                     SyntaxErrorType = 252
-	ERR_SYMBOL_TERM_DYNAMIC                SyntaxErrorType = 253
-	ERR_SYMBOL_TERM_INTERPOLATED           SyntaxErrorType = 254
-	ERR_TERNARY_COLON                      SyntaxErrorType = 255
-	ERR_TERNARY_EXPRESSION_FALSE           SyntaxErrorType = 256
-	ERR_TERNARY_EXPRESSION_TRUE            SyntaxErrorType = 257
-	ERR_UNARY_RECEIVER                     SyntaxErrorType = 258
-	ERR_UNDEF_ARGUMENT                     SyntaxErrorType = 259
-	ERR_UNEXPECTED_BLOCK_ARGUMENT          SyntaxErrorType = 260
-	ERR_UNEXPECTED_INDEX_BLOCK             SyntaxErrorType = 261
-	ERR_UNEXPECTED_INDEX_KEYWORDS          SyntaxErrorType = 262
-	ERR_UNEXPECTED_SAFE_NAVIGATION         SyntaxErrorType = 263
-	ERR_UNEXPECTED_TOKEN_CLOSE_CONTEXT     SyntaxErrorType = 264
-	ERR_UNEXPECTED_TOKEN_IGNORE            SyntaxErrorType = 265
-	ERR_UNTIL_TERM                         SyntaxErrorType = 266
-	ERR_VOID_EXPRESSION                    SyntaxErrorType = 267
-	ERR_WHILE_TERM                         SyntaxErrorType = 268
-	ERR_WRITE_TARGET_IN_METHOD             SyntaxErrorType = 269
-	ERR_WRITE_TARGET_READONLY              SyntaxErrorType = 270
-	ERR_WRITE_TARGET_UNEXPECTED            SyntaxErrorType = 271
-	ERR_XSTRING_TERM                       SyntaxErrorType = 272
+	ERR_EXPRESSION_NOT_WRITABLE_NUMBERED   SyntaxErrorType = 115
+	ERR_EXPRESSION_NOT_WRITABLE_SELF       SyntaxErrorType = 116
+	ERR_EXPRESSION_NOT_WRITABLE_TRUE       SyntaxErrorType = 117
+	ERR_FLOAT_PARSE                        SyntaxErrorType = 118
+	ERR_FOR_COLLECTION                     SyntaxErrorType = 119
+	ERR_FOR_IN                             SyntaxErrorType = 120
+	ERR_FOR_INDEX                          SyntaxErrorType = 121
+	ERR_FOR_TERM                           SyntaxErrorType = 122
+	ERR_GLOBAL_VARIABLE_BARE               SyntaxErrorType = 123
+	ERR_HASH_EXPRESSION_AFTER_LABEL        SyntaxErrorType = 124
+	ERR_HASH_KEY                           SyntaxErrorType = 125
+	ERR_HASH_ROCKET                        SyntaxErrorType = 126
+	ERR_HASH_TERM                          SyntaxErrorType = 127
+	ERR_HASH_VALUE                         SyntaxErrorType = 128
+	ERR_HEREDOC_IDENTIFIER                 SyntaxErrorType = 129
+	ERR_HEREDOC_TERM                       SyntaxErrorType = 130
+	ERR_INCOMPLETE_QUESTION_MARK           SyntaxErrorType = 131
+	ERR_INCOMPLETE_VARIABLE_CLASS          SyntaxErrorType = 132
+	ERR_INCOMPLETE_VARIABLE_CLASS_3_3      SyntaxErrorType = 133
+	ERR_INCOMPLETE_VARIABLE_INSTANCE       SyntaxErrorType = 134
+	ERR_INCOMPLETE_VARIABLE_INSTANCE_3_3   SyntaxErrorType = 135
+	ERR_INSTANCE_VARIABLE_BARE             SyntaxErrorType = 136
+	ERR_INVALID_BLOCK_EXIT                 SyntaxErrorType = 137
+	ERR_INVALID_CHARACTER                  SyntaxErrorType = 138
+	ERR_INVALID_ENCODING_MAGIC_COMMENT     SyntaxErrorType = 139
+	ERR_INVALID_ESCAPE_CHARACTER           SyntaxErrorType = 140
+	ERR_INVALID_FLOAT_EXPONENT             SyntaxErrorType = 141
+	ERR_INVALID_LOCAL_VARIABLE_READ        SyntaxErrorType = 142
+	ERR_INVALID_LOCAL_VARIABLE_WRITE       SyntaxErrorType = 143
+	ERR_INVALID_MULTIBYTE_CHAR             SyntaxErrorType = 144
+	ERR_INVALID_MULTIBYTE_CHARACTER        SyntaxErrorType = 145
+	ERR_INVALID_MULTIBYTE_ESCAPE           SyntaxErrorType = 146
+	ERR_INVALID_NUMBER_BINARY              SyntaxErrorType = 147
+	ERR_INVALID_NUMBER_DECIMAL             SyntaxErrorType = 148
+	ERR_INVALID_NUMBER_FRACTION            SyntaxErrorType = 149
+	ERR_INVALID_NUMBER_HEXADECIMAL         SyntaxErrorType = 150
+	ERR_INVALID_NUMBER_OCTAL               SyntaxErrorType = 151
+	ERR_INVALID_NUMBER_UNDERSCORE_INNER    SyntaxErrorType = 152
+	ERR_INVALID_NUMBER_UNDERSCORE_TRAILING SyntaxErrorType = 153
+	ERR_INVALID_PERCENT                    SyntaxErrorType = 154
+	ERR_INVALID_PERCENT_EOF                SyntaxErrorType = 155
+	ERR_INVALID_PRINTABLE_CHARACTER        SyntaxErrorType = 156
+	ERR_INVALID_RETRY_AFTER_ELSE           SyntaxErrorType = 157
+	ERR_INVALID_RETRY_AFTER_ENSURE         SyntaxErrorType = 158
+	ERR_INVALID_RETRY_WITHOUT_RESCUE       SyntaxErrorType = 159
+	ERR_INVALID_SYMBOL                     SyntaxErrorType = 160
+	ERR_INVALID_VARIABLE_GLOBAL            SyntaxErrorType = 161
+	ERR_INVALID_VARIABLE_GLOBAL_3_3        SyntaxErrorType = 162
+	ERR_INVALID_YIELD                      SyntaxErrorType = 163
+	ERR_IT_NOT_ALLOWED_NUMBERED            SyntaxErrorType = 164
+	ERR_IT_NOT_ALLOWED_ORDINARY            SyntaxErrorType = 165
+	ERR_LAMBDA_OPEN                        SyntaxErrorType = 166
+	ERR_LAMBDA_TERM_BRACE                  SyntaxErrorType = 167
+	ERR_LAMBDA_TERM_END                    SyntaxErrorType = 168
+	ERR_LIST_I_LOWER_ELEMENT               SyntaxErrorType = 169
+	ERR_LIST_I_LOWER_TERM                  SyntaxErrorType = 170
+	ERR_LIST_I_UPPER_ELEMENT               SyntaxErrorType = 171
+	ERR_LIST_I_UPPER_TERM                  SyntaxErrorType = 172
+	ERR_LIST_W_LOWER_ELEMENT               SyntaxErrorType = 173
+	ERR_LIST_W_LOWER_TERM                  SyntaxErrorType = 174
+	ERR_LIST_W_UPPER_ELEMENT               SyntaxErrorType = 175
+	ERR_LIST_W_UPPER_TERM                  SyntaxErrorType = 176
+	ERR_MALLOC_FAILED                      SyntaxErrorType = 177
+	ERR_MIXED_ENCODING                     SyntaxErrorType = 178
+	ERR_MODULE_IN_METHOD                   SyntaxErrorType = 179
+	ERR_MODULE_NAME                        SyntaxErrorType = 180
+	ERR_MODULE_TERM                        SyntaxErrorType = 181
+	ERR_MULTI_ASSIGN_MULTI_SPLATS          SyntaxErrorType = 182
+	ERR_MULTI_ASSIGN_UNEXPECTED_REST       SyntaxErrorType = 183
+	ERR_NO_LOCAL_VARIABLE                  SyntaxErrorType = 184
+	ERR_NOT_EXPRESSION                     SyntaxErrorType = 185
+	ERR_NUMBER_LITERAL_UNDERSCORE          SyntaxErrorType = 186
+	ERR_NUMBERED_PARAMETER_INNER_BLOCK     SyntaxErrorType = 187
+	ERR_NUMBERED_PARAMETER_IT              SyntaxErrorType = 188
+	ERR_NUMBERED_PARAMETER_ORDINARY        SyntaxErrorType = 189
+	ERR_NUMBERED_PARAMETER_OUTER_BLOCK     SyntaxErrorType = 190
+	ERR_OPERATOR_MULTI_ASSIGN              SyntaxErrorType = 191
+	ERR_OPERATOR_WRITE_ARGUMENTS           SyntaxErrorType = 192
+	ERR_OPERATOR_WRITE_BLOCK               SyntaxErrorType = 193
+	ERR_PARAMETER_ASSOC_SPLAT_MULTI        SyntaxErrorType = 194
+	ERR_PARAMETER_BLOCK_MULTI              SyntaxErrorType = 195
+	ERR_PARAMETER_CIRCULAR                 SyntaxErrorType = 196
+	ERR_PARAMETER_FORWARDING_AFTER_REST    SyntaxErrorType = 197
+	ERR_PARAMETER_METHOD_NAME              SyntaxErrorType = 198
+	ERR_PARAMETER_NAME_DUPLICATED          SyntaxErrorType = 199
+	ERR_PARAMETER_NO_DEFAULT               SyntaxErrorType = 200
+	ERR_PARAMETER_NO_DEFAULT_KW            SyntaxErrorType = 201
+	ERR_PARAMETER_NUMBERED_RESERVED        SyntaxErrorType = 202
+	ERR_PARAMETER_ORDER                    SyntaxErrorType = 203
+	ERR_PARAMETER_SPLAT_MULTI              SyntaxErrorType = 204
+	ERR_PARAMETER_STAR                     SyntaxErrorType = 205
+	ERR_PARAMETER_UNEXPECTED_FWD           SyntaxErrorType = 206
+	ERR_PARAMETER_UNEXPECTED_NO_KW         SyntaxErrorType = 207
+	ERR_PARAMETER_WILD_LOOSE_COMMA         SyntaxErrorType = 208
+	ERR_PATTERN_CAPTURE_DUPLICATE          SyntaxErrorType = 209
+	ERR_PATTERN_EXPRESSION_AFTER_BRACKET   SyntaxErrorType = 210
+	ERR_PATTERN_EXPRESSION_AFTER_COMMA     SyntaxErrorType = 211
+	ERR_PATTERN_EXPRESSION_AFTER_HROCKET   SyntaxErrorType = 212
+	ERR_PATTERN_EXPRESSION_AFTER_IN        SyntaxErrorType = 213
+	ERR_PATTERN_EXPRESSION_AFTER_KEY       SyntaxErrorType = 214
+	ERR_PATTERN_EXPRESSION_AFTER_PAREN     SyntaxErrorType = 215
+	ERR_PATTERN_EXPRESSION_AFTER_PIN       SyntaxErrorType = 216
+	ERR_PATTERN_EXPRESSION_AFTER_PIPE      SyntaxErrorType = 217
+	ERR_PATTERN_EXPRESSION_AFTER_RANGE     SyntaxErrorType = 218
+	ERR_PATTERN_EXPRESSION_AFTER_REST      SyntaxErrorType = 219
+	ERR_PATTERN_HASH_IMPLICIT              SyntaxErrorType = 220
+	ERR_PATTERN_HASH_KEY                   SyntaxErrorType = 221
+	ERR_PATTERN_HASH_KEY_DUPLICATE         SyntaxErrorType = 222
+	ERR_PATTERN_HASH_KEY_INTERPOLATED      SyntaxErrorType = 223
+	ERR_PATTERN_HASH_KEY_LABEL             SyntaxErrorType = 224
+	ERR_PATTERN_HASH_KEY_LOCALS            SyntaxErrorType = 225
+	ERR_PATTERN_IDENT_AFTER_HROCKET        SyntaxErrorType = 226
+	ERR_PATTERN_LABEL_AFTER_COMMA          SyntaxErrorType = 227
+	ERR_PATTERN_REST                       SyntaxErrorType = 228
+	ERR_PATTERN_TERM_BRACE                 SyntaxErrorType = 229
+	ERR_PATTERN_TERM_BRACKET               SyntaxErrorType = 230
+	ERR_PATTERN_TERM_PAREN                 SyntaxErrorType = 231
+	ERR_PIPEPIPEEQ_MULTI_ASSIGN            SyntaxErrorType = 232
+	ERR_REGEXP_ENCODING_OPTION_MISMATCH    SyntaxErrorType = 233
+	ERR_REGEXP_INCOMPAT_CHAR_ENCODING      SyntaxErrorType = 234
+	ERR_REGEXP_INVALID_UNICODE_RANGE       SyntaxErrorType = 235
+	ERR_REGEXP_NON_ESCAPED_MBC             SyntaxErrorType = 236
+	ERR_REGEXP_PARSE_ERROR                 SyntaxErrorType = 237
+	ERR_REGEXP_TERM                        SyntaxErrorType = 238
+	ERR_REGEXP_UNKNOWN_OPTIONS             SyntaxErrorType = 239
+	ERR_REGEXP_UTF8_CHAR_NON_UTF8_REGEXP   SyntaxErrorType = 240
+	ERR_RESCUE_EXPRESSION                  SyntaxErrorType = 241
+	ERR_RESCUE_MODIFIER_VALUE              SyntaxErrorType = 242
+	ERR_RESCUE_TERM                        SyntaxErrorType = 243
+	ERR_RESCUE_VARIABLE                    SyntaxErrorType = 244
+	ERR_RETURN_INVALID                     SyntaxErrorType = 245
+	ERR_SCRIPT_NOT_FOUND                   SyntaxErrorType = 246
+	ERR_SINGLETON_FOR_LITERALS             SyntaxErrorType = 247
+	ERR_STATEMENT_ALIAS                    SyntaxErrorType = 248
+	ERR_STATEMENT_POSTEXE_END              SyntaxErrorType = 249
+	ERR_STATEMENT_PREEXE_BEGIN             SyntaxErrorType = 250
+	ERR_STATEMENT_UNDEF                    SyntaxErrorType = 251
+	ERR_STRING_CONCATENATION               SyntaxErrorType = 252
+	ERR_STRING_INTERPOLATED_TERM           SyntaxErrorType = 253
+	ERR_STRING_LITERAL_EOF                 SyntaxErrorType = 254
+	ERR_STRING_LITERAL_TERM                SyntaxErrorType = 255
+	ERR_SYMBOL_INVALID                     SyntaxErrorType = 256
+	ERR_SYMBOL_TERM_DYNAMIC                SyntaxErrorType = 257
+	ERR_SYMBOL_TERM_INTERPOLATED           SyntaxErrorType = 258
+	ERR_TERNARY_COLON                      SyntaxErrorType = 259
+	ERR_TERNARY_EXPRESSION_FALSE           SyntaxErrorType = 260
+	ERR_TERNARY_EXPRESSION_TRUE            SyntaxErrorType = 261
+	ERR_UNARY_RECEIVER                     SyntaxErrorType = 262
+	ERR_UNDEF_ARGUMENT                     SyntaxErrorType = 263
+	ERR_UNEXPECTED_BLOCK_ARGUMENT          SyntaxErrorType = 264
+	ERR_UNEXPECTED_INDEX_BLOCK             SyntaxErrorType = 265
+	ERR_UNEXPECTED_INDEX_KEYWORDS          SyntaxErrorType = 266
+	ERR_UNEXPECTED_SAFE_NAVIGATION         SyntaxErrorType = 267
+	ERR_UNEXPECTED_TOKEN_CLOSE_CONTEXT     SyntaxErrorType = 268
+	ERR_UNEXPECTED_TOKEN_IGNORE            SyntaxErrorType = 269
+	ERR_UNTIL_TERM                         SyntaxErrorType = 270
+	ERR_VOID_EXPRESSION                    SyntaxErrorType = 271
+	ERR_WHILE_TERM                         SyntaxErrorType = 272
+	ERR_WRITE_TARGET_IN_METHOD             SyntaxErrorType = 273
+	ERR_WRITE_TARGET_READONLY              SyntaxErrorType = 274
+	ERR_WRITE_TARGET_UNEXPECTED            SyntaxErrorType = 275
+	ERR_XSTRING_TERM                       SyntaxErrorType = 276
 )
 
 var SyntaxErrorLevels = []SyntaxErrorLevel{SyntaxErrorFatal, SyntaxErrorArgument}
@@ -403,6 +407,7 @@ var SyntaxErrorTypes = []SyntaxErrorType{
 	ERR_EXPRESSION_NOT_WRITABLE_FILE,
 	ERR_EXPRESSION_NOT_WRITABLE_LINE,
 	ERR_EXPRESSION_NOT_WRITABLE_NIL,
+	ERR_EXPRESSION_NOT_WRITABLE_NUMBERED,
 	ERR_EXPRESSION_NOT_WRITABLE_SELF,
 	ERR_EXPRESSION_NOT_WRITABLE_TRUE,
 	ERR_FLOAT_PARSE,
@@ -442,6 +447,7 @@ var SyntaxErrorTypes = []SyntaxErrorType{
 	ERR_INVALID_NUMBER_UNDERSCORE_INNER,
 	ERR_INVALID_NUMBER_UNDERSCORE_TRAILING,
 	ERR_INVALID_PERCENT,
+	ERR_INVALID_PERCENT_EOF,
 	ERR_INVALID_PRINTABLE_CHARACTER,
 	ERR_INVALID_RETRY_AFTER_ELSE,
 	ERR_INVALID_RETRY_AFTER_ENSURE,
@@ -473,9 +479,10 @@ var SyntaxErrorTypes = []SyntaxErrorType{
 	ERR_NO_LOCAL_VARIABLE,
 	ERR_NOT_EXPRESSION,
 	ERR_NUMBER_LITERAL_UNDERSCORE,
+	ERR_NUMBERED_PARAMETER_INNER_BLOCK,
 	ERR_NUMBERED_PARAMETER_IT,
 	ERR_NUMBERED_PARAMETER_ORDINARY,
-	ERR_NUMBERED_PARAMETER_OUTER_SCOPE,
+	ERR_NUMBERED_PARAMETER_OUTER_BLOCK,
 	ERR_OPERATOR_MULTI_ASSIGN,
 	ERR_OPERATOR_WRITE_ARGUMENTS,
 	ERR_OPERATOR_WRITE_BLOCK,
@@ -492,8 +499,8 @@ var SyntaxErrorTypes = []SyntaxErrorType{
 	ERR_PARAMETER_SPLAT_MULTI,
 	ERR_PARAMETER_STAR,
 	ERR_PARAMETER_UNEXPECTED_FWD,
-	ERR_PARAMETER_WILD_LOOSE_COMMA,
 	ERR_PARAMETER_UNEXPECTED_NO_KW,
+	ERR_PARAMETER_WILD_LOOSE_COMMA,
 	ERR_PATTERN_CAPTURE_DUPLICATE,
 	ERR_PATTERN_EXPRESSION_AFTER_BRACKET,
 	ERR_PATTERN_EXPRESSION_AFTER_COMMA,
@@ -522,6 +529,7 @@ var SyntaxErrorTypes = []SyntaxErrorType{
 	ERR_REGEXP_INCOMPAT_CHAR_ENCODING,
 	ERR_REGEXP_INVALID_UNICODE_RANGE,
 	ERR_REGEXP_NON_ESCAPED_MBC,
+	ERR_REGEXP_PARSE_ERROR,
 	ERR_REGEXP_TERM,
 	ERR_REGEXP_UNKNOWN_OPTIONS,
 	ERR_REGEXP_UTF8_CHAR_NON_UTF8_REGEXP,
